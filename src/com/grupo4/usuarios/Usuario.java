@@ -2,10 +2,8 @@ package com.grupo4.usuarios;
 
 import com.grupo4.exceptions.SenhaIncorretaException;
 
-import java.util.HashMap;
 
 public abstract class Usuario {
-    public static HashMap<String, Usuario> listaUsuarios = new HashMap<>();
     protected String nome;
     protected String cpf;
     protected String senha;
