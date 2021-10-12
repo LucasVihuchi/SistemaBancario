@@ -10,6 +10,8 @@ import com.grupo4.interfaces.TaxasConta;
 import com.grupo4.repositorios.SeguroVidaRepositorio;
 import com.grupo4.segurovida.SeguroVida;
 
+import java.io.IOException;
+
 public class ContaCorrente extends Conta{
     static {
         ContaCorrente.tipo = TipoConta.CORRENTE;
@@ -23,7 +25,7 @@ public class ContaCorrente extends Conta{
         // TODO Implementar rotina de geração de relatório de tributação
     }
 
-    public void contrataSeguroVida(double valorSeguradoExt, int qtdMesesExt, String... segurados) throws SaldoInsuficienteException, ValorNegativoException, CpfInexistenteException, SeguroExistenteException {
+    public void contrataSeguroVida(double valorSeguradoExt, int qtdMesesExt, String... segurados) throws SaldoInsuficienteException, ValorNegativoException, CpfInexistenteException, SeguroExistenteException, IOException {
         SeguroVida seguroVidaTemp = new SeguroVida(this.cpfTitular, valorSeguradoExt, qtdMesesExt, segurados);
         SeguroVidaRepositorio.adicionaSeguroVida(seguroVidaTemp);
         this.saldo -= (valorSeguradoExt * TaxasConta.taxaContratacaoSeguroDeVida);

@@ -28,4 +28,8 @@ public abstract class Usuario {
     public String getCpf() {
         return this.cpf;
     }
+
+    public String getSenha() {
+        return this.senha;
+    }
 }
