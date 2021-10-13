@@ -1,7 +1,21 @@
 package com.grupo4.usuarios;
 
+import com.grupo4.contas.ContaCorrente;
+import com.grupo4.contas.ContaPoupanca;
 import com.grupo4.enums.Cargo;
 import com.grupo4.interfaces.GeradorRelatorioDiretoria;
+import com.grupo4.repositorios.ContaCorrenteRepositorio;
+import com.grupo4.repositorios.ContaPoupancaRepositorio;
+import com.grupo4.repositorios.SeguroVidaRepositorio;
+import com.grupo4.segurovida.SeguroVida;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class Presidente extends Funcionario implements GeradorRelatorioDiretoria{
     static {
@@ -12,7 +26,45 @@ public class Presidente extends Funcionario implements GeradorRelatorioDiretoria
         super(nomeExt, cpfExt, senhaExt);
     }
 
-    public void geraRelatorioCapitalBanco() {
-        // TODO Implementar rotina de geração de relatorio de capital total do banco
+    public void geraRelatorioCapitalBanco() throws IOException {
+        List<ContaCorrente> listaContasCorrente = ContaCorrenteRepositorio.getContasCorrente();
+        List<ContaPoupanca> listaContasPoupanca = ContaPoupancaRepositorio.getContasPoupanca();
+        List<SeguroVida> listaSegurosVida = SeguroVidaRepositorio.getSegurosVida();
+
+        double capitalTotal = 0;
+
+        for (ContaCorrente contaCorrente : listaContasCorrente) {
+            capitalTotal += contaCorrente.getSaldo();
+        }
+        for (ContaPoupanca contaPoupanca : listaContasPoupanca) {
+            capitalTotal += contaPoupanca.getSaldo();
+        }
+        for (SeguroVida seguroVida : listaSegurosVida) {
+            capitalTotal += seguroVida.getValorPago();
+        }
+
+        System.out.println("O capital total armazenado no banco é de: R$ " + String.format("%.2f", capitalTotal));
+
+        LocalDateTime momentoAtual = LocalDateTime.now();
+        DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
+
+        File relatorioCapitalBanco = new File("C:\\RepositorioBanco\\Relatorios\\Presidencia\\ClientesBanco-" + momentoAtual + ".txt");
+
+        if (!relatorioCapitalBanco.exists()) {
+            relatorioCapitalBanco.mkdirs();
+            relatorioCapitalBanco.createNewFile();
+        }
+
+        try (FileWriter relatorioCapitalBancoWriter = new FileWriter(relatorioCapitalBanco);
+             BufferedWriter relatorioCapitalBancoWriterBuff = new BufferedWriter(relatorioCapitalBancoWriter)) {
+
+            relatorioCapitalBancoWriterBuff.append("Relatório de capital no banco - " + formatoBrasileiro.format(momentoAtual));
+            relatorioCapitalBancoWriterBuff.newLine();
+            relatorioCapitalBancoWriterBuff.append("O capital total armazenado no banco é de: R$ " + String.format("%.2f", capitalTotal));
+
+        } catch (IOException e) {
+            System.out.println("Erro de leitura de arquivos");
+        }
     }
 }

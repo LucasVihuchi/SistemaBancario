@@ -33,6 +33,15 @@ public class SeguroVida {
         this.valorPago = valorSeguradoExt * TaxasConta.taxaContratacaoSeguroDeVida;
     }
 
+    public SeguroVida(String cpfSegurado, double valorSegurado, int qtdMeses, double valorPago, List<String> segurados, LocalDate dataContratacao) {
+        this.cpfSegurado = cpfSegurado;
+        this.valorSegurado = valorSegurado;
+        this.qtdMeses = qtdMeses;
+        this.valorPago = valorPago;
+        this.segurados = segurados;
+        this.dataContratacao = dataContratacao;
+    }
+
     public double calculaMensalidade() {
         return (this.valorSegurado * (1 - TaxasConta.taxaContratacaoSeguroDeVida)) / qtdMeses;
     }

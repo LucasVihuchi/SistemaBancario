@@ -14,4 +14,13 @@ public enum Agencia {
     public int getIdAgencia() {
         return this.idAgencia;
     }
+
+    public static Agencia getAgenciaPorId (int idAgenciaExt) {
+        for (Agencia ag : Agencia.values()) {
+            if (idAgenciaExt == ag.idAgencia) {
+                return ag;
+            }
+        }
+        return null;
+    }
 }

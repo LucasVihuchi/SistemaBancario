@@ -1,14 +1,14 @@
 package com.grupo4.repositorios;
 
 import com.grupo4.contas.ContaCorrente;
+import com.grupo4.enums.Agencia;
 import com.grupo4.exceptions.ContaExistenteException;
 import com.grupo4.exceptions.CpfInexistenteException;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ContaCorrenteRepositorio {
     private static HashMap<String, ContaCorrente> listaDeContasCorrente = new HashMap<>();
@@ -31,7 +31,7 @@ public class ContaCorrenteRepositorio {
 
             contaCorrenteDBWriterBuff.append(contaCorrenteExt.getCpfTitular() + "¨¨" +
                     contaCorrenteExt.getSaldo() + "¨¨" +
-                    contaCorrenteExt.getIdAgencia().getIdAgencia());
+                    contaCorrenteExt.getAgencia().getIdAgencia());
 
             contaCorrenteDBWriterBuff.newLine();
 
@@ -52,5 +52,50 @@ public class ContaCorrenteRepositorio {
             throw new CpfInexistenteException();
         }
         return listaDeContasCorrente.get(cpfExt);
+    }
+
+    public static List<ContaCorrente> getContasCorrentePorAgencia(Agencia... agencias) {
+
+        // Criando a lista que vou retornar pro meu gerente
+        List<ContaCorrente> listaFiltrada = new ArrayList<>();
+
+        // Percorrendo cada uma das contas do banco
+        for (ContaCorrente contaCorrente : listaDeContasCorrente.values()) {
+            // Pra cada conta, vou percorrer todas as agências que eu pedi na chamada da função
+            for (Agencia ag : agencias) {
+                // Verificar se qualquer uma dela é igual a agência da conta corrente atual em que estou
+                if (ag.equals(contaCorrente.getAgencia())) {
+                    listaFiltrada.add(contaCorrente);
+                }
+            }
+        }
+        return listaFiltrada;
+    }
+
+    public static List<ContaCorrente> getContasCorrente() {
+        return listaDeContasCorrente.values().stream().toList();
+    }
+
+    // Pega o arquivo, lê cada linha e transforma em contacorrente pra ser guardado no hashmap
+    public static void ContaCorrenteLoader () {
+        File contaCorrenteBD = new File("C:\\RepositorioBanco\\contaCorrenteRepositorio.txt");
+
+        try (FileReader contaCorrenteBDReader = new FileReader(contaCorrenteBD);
+             BufferedReader contaCorrenteBDReaderBuff = new BufferedReader(contaCorrenteBDReader)) {
+
+            while (contaCorrenteBDReaderBuff.ready()) {
+                String[] itensTemp = contaCorrenteBDReaderBuff.readLine().split("¨¨");
+
+                String cpfTemp = itensTemp[0];
+                double saldoTemp = Double.parseDouble(itensTemp[1]);
+                int idAgencia = Integer.parseInt(itensTemp[2]);
+                Agencia agenciaTemp = Agencia.getAgenciaPorId(idAgencia);
+
+                ContaCorrente contaCorrenteTemp = new ContaCorrente(cpfTemp, agenciaTemp, saldoTemp);
+                listaDeContasCorrente.put(contaCorrenteTemp.getCpfTitular(), contaCorrenteTemp);
+            }
+        } catch (IOException e) {
+            System.out.println("Erro de leitura de arquivos!");
+        }
     }
 }

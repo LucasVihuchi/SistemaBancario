@@ -2,6 +2,15 @@ package com.grupo4.usuarios;
 
 import com.grupo4.enums.Agencia;
 import com.grupo4.enums.Cargo;
+import com.grupo4.repositorios.ContaCorrenteRepositorio;
+import com.grupo4.repositorios.ContaPoupancaRepositorio;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Gerente extends Funcionario{
     private Agencia idAgencia;
@@ -15,8 +24,43 @@ public class Gerente extends Funcionario{
         this.idAgencia = idAgenciaExt;
     }
 
-    public void geraRelatorioNumContas() {
-        // TODO implementar rotina de geração de relatório de numero de contas na agencia
+    public void geraRelatorioNumContas() throws IOException {
+        int qtdContasCorrente = ContaCorrenteRepositorio.getContasCorrentePorAgencia(idAgencia).size();
+        int qtdContasPoupanca = ContaPoupancaRepositorio.getContasPoupancaPorAgencia(idAgencia).size();
+        System.out.println("O numero de contas corrente na agência " +
+                this.idAgencia.getIdAgencia() + " é igual a " + qtdContasCorrente);
+        System.out.println("O numero de contas poupança na agência " +
+                this.idAgencia.getIdAgencia() + " é igual a " + qtdContasPoupanca);
+        System.out.println("O numero de total de contas na agência " +
+                this.idAgencia.getIdAgencia() + " é igual a " + qtdContasPoupanca+qtdContasCorrente);
+
+        LocalDateTime momentoAtual = LocalDateTime.now();
+        DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
+        File relatorioNumContas = new File("C:\\RepositorioBanco\\Relatorios\\Gerencia\\NumContas-" + momentoAtual + ".txt");
+
+        if(!relatorioNumContas.exists()) {
+            relatorioNumContas.mkdirs();
+            relatorioNumContas.createNewFile();
+        }
+
+        try (FileWriter relatorioNumContasWriter = new FileWriter(relatorioNumContas);
+             BufferedWriter relatorioNumContasWriterBuff = new BufferedWriter(relatorioNumContasWriter)) {
+
+            relatorioNumContasWriterBuff.append("Relatório de número de contas na agência - " + formatoBrasileiro.format(momentoAtual));
+            relatorioNumContasWriterBuff.newLine();
+            relatorioNumContasWriterBuff.append("O numero de contas corrente na agência " +
+                    this.idAgencia.getIdAgencia() + " é igual a " + qtdContasCorrente);
+            relatorioNumContasWriterBuff.newLine();
+            relatorioNumContasWriterBuff.append("O numero de contas poupança na agência " +
+                    this.idAgencia.getIdAgencia() + " é igual a " + qtdContasPoupanca);
+            relatorioNumContasWriterBuff.newLine();
+            relatorioNumContasWriterBuff.append("O numero de total de contas na agência " +
+                    this.idAgencia.getIdAgencia() + " é igual a " + qtdContasPoupanca+qtdContasCorrente);
+
+        } catch (IOException e) {
+            System.out.println("Erro de escrita de arquivos");
+        }
     }
 
     public Agencia getIdAgencia() {

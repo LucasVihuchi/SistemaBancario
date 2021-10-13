@@ -1,14 +1,14 @@
 package com.grupo4.repositorios;
 
+import com.grupo4.contas.ContaPoupanca;
+import com.grupo4.enums.Agencia;
 import com.grupo4.exceptions.CpfInexistenteException;
 import com.grupo4.exceptions.UsuarioExistenteException;
 import com.grupo4.usuarios.*;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
+import java.util.List;
 
 public class UsuarioRepositorio {
     // CPF (key ou chave) / Usuario (value ou valor)
@@ -65,5 +65,44 @@ public class UsuarioRepositorio {
             throw new CpfInexistenteException();
         }
         return listaUsuarios.get(cpfExt);
+    }
+
+    public static List<Usuario> getUsuarios() {
+        return listaUsuarios.values().stream().toList();
+    }
+
+    public static void usuarioLoader () {
+        File usuarioBD = new File("C:\\RepositorioBanco\\contaPoupancaRepositorio.txt");
+
+        try (FileReader usuarioBDReader = new FileReader(usuarioBD);
+             BufferedReader usuarioBDReaderBuff = new BufferedReader(usuarioBDReader)) {
+
+            while (usuarioBDReaderBuff.ready()) {
+                String[] itensTemp = usuarioBDReaderBuff.readLine().split("¨¨");
+
+                String nomeTemp = itensTemp[0];
+                String cpfTemp = itensTemp[1];
+                String senhaTemp = itensTemp[2];
+                String tipoUsuario = itensTemp[3];
+                Usuario usuarioTemp = null;
+                if (tipoUsuario.equals("c")) {
+                    usuarioTemp = new Cliente(nomeTemp, cpfTemp, senhaTemp);
+                }
+                else if (tipoUsuario.equals("g")) {
+                    int idAgenciaTemp = Integer.parseInt(itensTemp[4]);
+                    Agencia agenciaTemp = Agencia.getAgenciaPorId(idAgenciaTemp);
+                    usuarioTemp = new Gerente(nomeTemp, cpfTemp, senhaTemp, agenciaTemp);
+                }
+                else if (tipoUsuario.equals("d")) {
+                    usuarioTemp = new Diretor(nomeTemp, cpfTemp, senhaTemp);
+                }
+                else if (tipoUsuario.equals("p")) {
+                    usuarioTemp = new Presidente(nomeTemp, cpfTemp, senhaTemp);
+                }
+                listaUsuarios.put(usuarioTemp.getCpf(), usuarioTemp);
+            }
+        } catch (IOException e) {
+            System.out.println("Erro de leitura de arquivos!");
+        }
     }
 }

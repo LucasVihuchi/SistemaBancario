@@ -21,6 +21,11 @@ public class ContaCorrente extends Conta{
         super(cpfTitularExt, idAgenciaExt);
     }
 
+    // Construtor usado apenas para carregamento inicial do sistema
+    public ContaCorrente(String cpfTitularExt, Agencia idAgenciaExt, double saldoExt) {
+        super(cpfTitularExt, idAgenciaExt, saldoExt);
+    }
+
     public void geraRelatorioTributacao() {
         // TODO Implementar rotina de geração de relatório de tributação
     }

@@ -6,6 +6,7 @@ import com.grupo4.exceptions.ValorInvalidoException;
 import com.grupo4.exceptions.ValorNegativoException;
 import com.grupo4.interfaces.TaxasConta;
 
+import java.io.IOException;
 import java.time.LocalDate;
 
 public class ContaPoupanca extends Conta{
@@ -17,6 +18,11 @@ public class ContaPoupanca extends Conta{
 
     public ContaPoupanca(String cpfTitularExt, Agencia idAgenciaExt) {
         super(cpfTitularExt, idAgenciaExt);
+    }
+
+    public ContaPoupanca(String cpfTitularExt, Agencia idAgenciaExt, double saldoExt, int aniversarioContaExt) {
+        super(cpfTitularExt, idAgenciaExt, saldoExt);
+        this.aniversarioConta = aniversarioContaExt;
     }
 
     public void simularRendimento(double valor, int qtdDias) throws ValorNegativoException, ValorInvalidoException {
@@ -42,7 +48,7 @@ public class ContaPoupanca extends Conta{
     }
 
     @Override
-    public void deposito(double valor) throws ValorNegativoException {
+    public void deposito(double valor) throws ValorNegativoException, IOException {
         super.deposito(valor);
         if(this.aniversarioConta == 0) {
             this.aniversarioConta = LocalDate.now().getDayOfMonth();
