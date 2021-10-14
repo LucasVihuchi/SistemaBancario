@@ -68,10 +68,14 @@ public abstract class Conta {
     }
 
     protected void registraTransacao(double valor, String tipoTransacao, String... cpfDestinatario) throws IOException {
-        File historicoTransacoesBD = new File ("C:\\RepositorioBanco\\historicoTransacoesRepositorio.txt");
+        File pathHistoricoTransacoesDB = new File ("C:\\RepositorioBanco\\");
+        File historicoTransacoesBD = new File (pathHistoricoTransacoesDB.getAbsolutePath() + "\\historicoTransacoesRepositorio.txt");
+
+        if (!pathHistoricoTransacoesDB.exists()) {
+            pathHistoricoTransacoesDB.mkdirs();
+        }
 
         if(!historicoTransacoesBD.exists()) {
-            historicoTransacoesBD.mkdirs();
             historicoTransacoesBD.createNewFile();
         }
 

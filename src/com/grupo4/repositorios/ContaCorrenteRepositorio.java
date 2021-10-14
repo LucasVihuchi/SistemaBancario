@@ -19,10 +19,14 @@ public class ContaCorrenteRepositorio {
         }
         listaDeContasCorrente.put(contaCorrenteExt.getCpfTitular(), contaCorrenteExt);
 
-        File contaCorrenteBD = new File("C:\\RepositorioBanco\\contaCorrenteRepositorio.txt");
+        File pathContaCorrenteBD = new File ("C:\\RepositorioBanco\\");
+        File contaCorrenteBD = new File(pathContaCorrenteBD.getAbsolutePath() +  "\\contaCorrenteRepositorio.txt");
+
+        if(!pathContaCorrenteBD.exists()) {
+            pathContaCorrenteBD.mkdirs();
+        }
 
         if(!contaCorrenteBD.exists()) {
-            contaCorrenteBD.mkdirs();
             contaCorrenteBD.createNewFile();
         }
 
@@ -77,14 +81,24 @@ public class ContaCorrenteRepositorio {
     }
 
     // Pega o arquivo, lê cada linha e transforma em contacorrente pra ser guardado no hashmap
-    public static void ContaCorrenteLoader () {
-        File contaCorrenteBD = new File("C:\\RepositorioBanco\\contaCorrenteRepositorio.txt");
+    public static void ContaCorrenteLoader () throws IOException {
+        File pathContaCorrenteBD = new File ("C:\\RepositorioBanco\\");
+        File contaCorrenteBD = new File(pathContaCorrenteBD.getAbsolutePath() +  "\\contaCorrenteRepositorio.txt");
+
+        if(!pathContaCorrenteBD.exists()) {
+            pathContaCorrenteBD.mkdirs();
+        }
+
+        if(!contaCorrenteBD.exists()) {
+            contaCorrenteBD.createNewFile();
+        }
 
         try (FileReader contaCorrenteBDReader = new FileReader(contaCorrenteBD);
              BufferedReader contaCorrenteBDReaderBuff = new BufferedReader(contaCorrenteBDReader)) {
 
-            while (contaCorrenteBDReaderBuff.ready()) {
-                String[] itensTemp = contaCorrenteBDReaderBuff.readLine().split("¨¨");
+            String linhaLida;
+            while ((linhaLida = contaCorrenteBDReaderBuff.readLine()) != null) {
+                String[] itensTemp = linhaLida.split("¨¨");
 
                 String cpfTemp = itensTemp[0];
                 double saldoTemp = Double.parseDouble(itensTemp[1]);

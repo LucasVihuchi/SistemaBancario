@@ -2,8 +2,10 @@ package com.grupo4.usuarios;
 
 import com.grupo4.enums.Agencia;
 import com.grupo4.enums.Cargo;
+import com.grupo4.exceptions.CpfInexistenteException;
 import com.grupo4.repositorios.ContaCorrenteRepositorio;
 import com.grupo4.repositorios.ContaPoupancaRepositorio;
+import com.grupo4.repositorios.UsuarioRepositorio;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -37,10 +39,14 @@ public class Gerente extends Funcionario{
         LocalDateTime momentoAtual = LocalDateTime.now();
         DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-        File relatorioNumContas = new File("C:\\RepositorioBanco\\Relatorios\\Gerencia\\NumContas-" + momentoAtual + ".txt");
+        File pathRelatorioNumContas = new File("C:\\RepositorioBanco\\Relatorios\\Gerencia\\");
+        File relatorioNumContas = new File(pathRelatorioNumContas.getAbsolutePath() + "\\NumContas-" + momentoAtual + ".txt");
+
+        if(!pathRelatorioNumContas.exists()) {
+            pathRelatorioNumContas.mkdirs();
+        }
 
         if(!relatorioNumContas.exists()) {
-            relatorioNumContas.mkdirs();
             relatorioNumContas.createNewFile();
         }
 
@@ -48,6 +54,9 @@ public class Gerente extends Funcionario{
              BufferedWriter relatorioNumContasWriterBuff = new BufferedWriter(relatorioNumContasWriter)) {
 
             relatorioNumContasWriterBuff.append("Relatório de número de contas na agência - " + formatoBrasileiro.format(momentoAtual));
+            relatorioNumContasWriterBuff.newLine();
+            relatorioNumContasWriterBuff.append("Nome: " + UsuarioRepositorio.getUsuario(this.cpf).getNome() + " / CPF: " + this.cpf);
+            relatorioNumContasWriterBuff.newLine();
             relatorioNumContasWriterBuff.newLine();
             relatorioNumContasWriterBuff.append("O numero de contas corrente na agência " +
                     this.idAgencia.getIdAgencia() + " é igual a " + qtdContasCorrente);
@@ -58,7 +67,7 @@ public class Gerente extends Funcionario{
             relatorioNumContasWriterBuff.append("O numero de total de contas na agência " +
                     this.idAgencia.getIdAgencia() + " é igual a " + qtdContasPoupanca+qtdContasCorrente);
 
-        } catch (IOException e) {
+        } catch (IOException | CpfInexistenteException e) {
             System.out.println("Erro de escrita de arquivos");
         }
     }

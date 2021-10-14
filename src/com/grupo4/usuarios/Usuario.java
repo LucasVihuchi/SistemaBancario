@@ -3,7 +3,7 @@ package com.grupo4.usuarios;
 import com.grupo4.exceptions.SenhaIncorretaException;
 
 
-public abstract class Usuario implements Comparable {
+public abstract class Usuario implements Comparable<Usuario> {
     protected String nome;
     protected String cpf;
     protected String senha;
@@ -34,7 +34,7 @@ public abstract class Usuario implements Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
+    public int compareTo(Usuario o) {
         return this.nome.compareToIgnoreCase(((Usuario) o).nome);
     }
 }

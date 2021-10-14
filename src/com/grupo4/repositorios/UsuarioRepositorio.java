@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class UsuarioRepositorio {
-    // CPF (key ou chave) / Usuario (value ou valor)
     private static HashMap<String, Usuario> listaUsuarios = new HashMap<>();
 
     public static void adicionaUsuario(Usuario usuarioExt) throws UsuarioExistenteException, IOException {
@@ -20,15 +19,18 @@ public class UsuarioRepositorio {
         }
         listaUsuarios.put(usuarioExt.getCpf(), usuarioExt);
 
-        // Vou manipular esse caminho ali
-        File usuariosBD = new File("C:\\RepositorioBanco\\usuarioRepositorio.txt");
+        File pathUsuarioBD = new File ("C:\\RepositorioBanco\\");
+        File usuarioBD = new File(pathUsuarioBD.getAbsolutePath() + "\\usuarioRepositorio.txt");
 
-        if (!usuariosBD.exists()) { // Se não existir ainda
-            usuariosBD.mkdirs(); // Crio as pastas pra armazenar o arquivo
-            usuariosBD.createNewFile(); // Crio o arquivo que vai armazenar os meus dados
+        if(!pathUsuarioBD.exists()){
+            pathUsuarioBD.mkdirs();
         }
 
-        try (FileWriter usuarioDBWriter = new FileWriter(usuariosBD, true);
+        if(!usuarioBD.exists()) {
+            usuarioBD.createNewFile();
+        }
+
+        try (FileWriter usuarioDBWriter = new FileWriter(usuarioBD, true);
              BufferedWriter usuarioDBWriterBuff = new BufferedWriter(usuarioDBWriter)){
 
             usuarioDBWriterBuff.append(usuarioExt.getNome() + "¨¨" + usuarioExt.getCpf() + "¨¨" + usuarioExt.getSenha() + "¨¨");
@@ -60,6 +62,10 @@ public class UsuarioRepositorio {
         // TODO Implementar remoção de cadastro do arquivo de texto
     }
 
+    public static boolean isUsuarioCadastrado(String cpfExt) {
+        return listaUsuarios.containsKey(cpfExt);
+    }
+
     public static Usuario getUsuario(String cpfExt) throws CpfInexistenteException {
         if (!listaUsuarios.containsKey(cpfExt)) {
             throw new CpfInexistenteException();
@@ -71,14 +77,24 @@ public class UsuarioRepositorio {
         return listaUsuarios.values().stream().toList();
     }
 
-    public static void usuarioLoader () {
-        File usuarioBD = new File("C:\\RepositorioBanco\\contaPoupancaRepositorio.txt");
+    public static void usuarioLoader () throws IOException {
+        File pathUsuarioBD = new File ("C:\\RepositorioBanco\\");
+        File usuarioBD = new File(pathUsuarioBD.getAbsolutePath() + "\\usuarioRepositorio.txt");
+
+        if(!pathUsuarioBD.exists()){
+            pathUsuarioBD.mkdirs();
+        }
+
+        if(!usuarioBD.exists()) {
+            usuarioBD.createNewFile();
+        }
 
         try (FileReader usuarioBDReader = new FileReader(usuarioBD);
              BufferedReader usuarioBDReaderBuff = new BufferedReader(usuarioBDReader)) {
 
-            while (usuarioBDReaderBuff.ready()) {
-                String[] itensTemp = usuarioBDReaderBuff.readLine().split("¨¨");
+            String linhaLida;
+            while ((linhaLida = usuarioBDReaderBuff.readLine()) != null) {
+                String[] itensTemp = linhaLida.split("¨¨");
 
                 String nomeTemp = itensTemp[0];
                 String cpfTemp = itensTemp[1];

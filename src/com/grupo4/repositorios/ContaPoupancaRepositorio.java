@@ -19,10 +19,14 @@ public class ContaPoupancaRepositorio {
         }
         listaDeContasPoupanca.put(contaPoupancaExt.getCpfTitular(), contaPoupancaExt);
 
-        File contaPoupancaBD = new File("C:\\RepositorioBanco\\contaPoupancaRepositorio.txt");
+        File pathContaPoupancaBD = new File ("C:\\RepositorioBanco\\");
+        File contaPoupancaBD = new File(pathContaPoupancaBD.getAbsolutePath() + "\\contaPoupancaRepositorio.txt");
+
+        if (!pathContaPoupancaBD.exists()) {
+            pathContaPoupancaBD.mkdirs();
+        }
 
         if(!contaPoupancaBD.exists()) {
-            contaPoupancaBD.mkdirs();
             contaPoupancaBD.createNewFile();
         }
 
@@ -78,14 +82,25 @@ public class ContaPoupancaRepositorio {
     }
 
 
-    public static void ContaPoupancaLoader () {
-        File contaPoupancaBD = new File("C:\\RepositorioBanco\\contaPoupancaRepositorio.txt");
+    public static void ContaPoupancaLoader () throws IOException {
+        File pathContaPoupancaBD = new File ("C:\\RepositorioBanco\\");
+        File contaPoupancaBD = new File(pathContaPoupancaBD.getAbsolutePath() + "\\contaPoupancaRepositorio.txt");
+
+        if (!pathContaPoupancaBD.exists()) {
+            pathContaPoupancaBD.mkdirs();
+        }
+
+        if(!contaPoupancaBD.exists()) {
+            contaPoupancaBD.createNewFile();
+        }
+
 
         try (FileReader contaPoupancaBDReader = new FileReader(contaPoupancaBD);
              BufferedReader contaPoupancaBDReaderBuff = new BufferedReader(contaPoupancaBDReader)) {
 
-            while (contaPoupancaBDReaderBuff.ready()) {
-                String[] itensTemp = contaPoupancaBDReaderBuff.readLine().split("¨¨");
+            String linhaLida;
+            while ((linhaLida = contaPoupancaBDReaderBuff.readLine()) != null) {
+                String[] itensTemp = linhaLida.split("¨¨");
 
                 String cpfTemp = itensTemp[0];
                 double saldoTemp = Double.parseDouble(itensTemp[1]);

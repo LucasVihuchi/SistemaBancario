@@ -48,11 +48,14 @@ public class Presidente extends Funcionario implements GeradorRelatorioDiretoria
         LocalDateTime momentoAtual = LocalDateTime.now();
         DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
+        File pathRelatorioCapitalBanco = new File("C:\\RepositorioBanco\\Relatorios\\Presidencia\\");
+        File relatorioCapitalBanco = new File(pathRelatorioCapitalBanco.getAbsolutePath() + "\\ClientesBanco-" + momentoAtual + ".txt");
 
-        File relatorioCapitalBanco = new File("C:\\RepositorioBanco\\Relatorios\\Presidencia\\ClientesBanco-" + momentoAtual + ".txt");
+        if(!pathRelatorioCapitalBanco.exists()) {
+            pathRelatorioCapitalBanco.mkdirs();
+        }
 
         if (!relatorioCapitalBanco.exists()) {
-            relatorioCapitalBanco.mkdirs();
             relatorioCapitalBanco.createNewFile();
         }
 
