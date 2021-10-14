@@ -19,10 +19,14 @@ public class SeguroVidaRepositorio {
         }
         listaDeSeguroVida.put(seguroVidaExt.getCpfSegurado(), seguroVidaExt);
 
-        File seguroVidaBD = new File("C:\\RepositorioBanco\\seguroVidaRepositorio.txt");
+        File pathSeguroVidaBD = new File ("C:\\RepositorioBanco\\");
+        File seguroVidaBD = new File(pathSeguroVidaBD.getAbsolutePath() + "\\seguroVidaRepositorio.txt");
+
+        if(!pathSeguroVidaBD.exists()) {
+            pathSeguroVidaBD.mkdirs();
+        }
 
         if(!seguroVidaBD.exists()) {
-            seguroVidaBD.mkdirs();
             seguroVidaBD.createNewFile();
         }
 
@@ -61,14 +65,25 @@ public class SeguroVidaRepositorio {
         return listaDeSeguroVida.values().stream().toList();
     }
 
-    public static void SeguroVidaLoader () {
-        File seguroVidaBD = new File("C:\\RepositorioBanco\\seguroVidaRepositorio.txt");
+    public static void SeguroVidaLoader () throws IOException {
+        File pathSeguroVidaBD = new File ("C:\\RepositorioBanco\\");
+        File seguroVidaBD = new File(pathSeguroVidaBD.getAbsolutePath() + "\\seguroVidaRepositorio.txt");
+
+        if(!pathSeguroVidaBD.exists()) {
+            pathSeguroVidaBD.mkdirs();
+        }
+
+        if(!seguroVidaBD.exists()) {
+            seguroVidaBD.createNewFile();
+        }
+
 
         try (FileReader seguroVidaBDReader = new FileReader(seguroVidaBD);
              BufferedReader seguroVidaBDReaderBuff = new BufferedReader(seguroVidaBDReader)) {
 
-            while (seguroVidaBDReaderBuff.ready()) {
-                String[] itensTemp = seguroVidaBDReaderBuff.readLine().split("¨¨");
+            String linhaLida;
+            while ((linhaLida = seguroVidaBDReaderBuff.readLine()) != null) {
+                String[] itensTemp = linhaLida.split("¨¨");
 
                 String cpfTemp = itensTemp[0];
                 double valorSeguradoTemp = Double.parseDouble(itensTemp[1]);

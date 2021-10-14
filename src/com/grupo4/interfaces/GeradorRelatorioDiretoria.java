@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public interface GeradorRelatorioDiretoria {
@@ -44,15 +45,21 @@ public interface GeradorRelatorioDiretoria {
         DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
 
+        File pathRelatorioNumContas;
         File relatorioNumContas;
         if (this instanceof Diretor) {
-            relatorioNumContas = new File("C:\\RepositorioBanco\\Relatorios\\Diretoria\\NumContas-" + momentoAtual + ".txt");
+            pathRelatorioNumContas = new File("C:\\RepositorioBanco\\Relatorios\\Diretoria\\");
+            relatorioNumContas = new File(pathRelatorioNumContas.getAbsolutePath() + "\\NumContas-" + momentoAtual + ".txt");
         } else {
-            relatorioNumContas = new File("C:\\RepositorioBanco\\Relatorios\\Presidencia\\NumContas-" + momentoAtual + ".txt");
+            pathRelatorioNumContas = new File("C:\\RepositorioBanco\\Relatorios\\Presidencia\\");
+            relatorioNumContas = new File(pathRelatorioNumContas.getAbsolutePath() + "\\NumContas-" + momentoAtual + ".txt");
+        }
+
+        if(!pathRelatorioNumContas.exists()) {
+            pathRelatorioNumContas.mkdirs();
         }
 
         if(!relatorioNumContas.exists()) {
-            relatorioNumContas.mkdirs();
             relatorioNumContas.createNewFile();
         }
 
@@ -80,19 +87,26 @@ public interface GeradorRelatorioDiretoria {
 
     default void geraRelatorioClientesBanco() throws IOException {
         List<Usuario> listaUsuarios = UsuarioRepositorio.getUsuarios();
+        Collections.sort(listaUsuarios);
 
         LocalDateTime momentoAtual = LocalDateTime.now();
         DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
+        File pathrelatorioClientesBanco;
         File relatorioClientesBanco;
         if (this instanceof Diretor) {
-            relatorioClientesBanco = new File("C:\\RepositorioBanco\\Relatorios\\Diretoria\\ClientesBanco-" + momentoAtual + ".txt");
+            pathrelatorioClientesBanco = new File("C:\\RepositorioBanco\\Relatorios\\Diretoria\\");
+            relatorioClientesBanco = new File(pathrelatorioClientesBanco.getAbsolutePath() + "\\ClientesBanco-" + momentoAtual + ".txt");
         } else {
-            relatorioClientesBanco = new File("C:\\RepositorioBanco\\Relatorios\\Presidencia\\ClientesBanco-" + momentoAtual + ".txt");
+            pathrelatorioClientesBanco = new File("C:\\RepositorioBanco\\Relatorios\\Presidencia\\");
+            relatorioClientesBanco = new File(pathrelatorioClientesBanco.getAbsolutePath() + "\\ClientesBanco-" + momentoAtual + ".txt");
+        }
+
+        if (!pathrelatorioClientesBanco.exists()) {
+            pathrelatorioClientesBanco.mkdirs();
         }
 
         if (!relatorioClientesBanco.exists()) {
-            relatorioClientesBanco.mkdirs();
             relatorioClientesBanco.createNewFile();
         }
 
