@@ -18,7 +18,7 @@ public class SeguroVida {
     private List<String> segurados;
     private LocalDate dataContratacao;
 
-    public SeguroVida(String cpfSeguradoExt, double valorSeguradoExt, int qtdMesesExt, String... segurados) throws CpfInexistenteException, SaldoInsuficienteException, ValorNegativoException {
+    public SeguroVida(String cpfSeguradoExt, double valorSeguradoExt, int qtdMesesExt, List<String> segurados) throws CpfInexistenteException, SaldoInsuficienteException, ValorNegativoException {
         if (qtdMesesExt <= 0 || valorSeguradoExt <= 0) {
             throw new ValorNegativoException();
         }
@@ -29,7 +29,7 @@ public class SeguroVida {
         this.valorSegurado = valorSeguradoExt;
         this.qtdMeses = qtdMesesExt;
         this.dataContratacao = LocalDate.now();
-        this.segurados = Arrays.stream(segurados).toList();
+        this.segurados = segurados;
         this.valorPago = valorSeguradoExt * TaxasConta.taxaContratacaoSeguroDeVida;
     }
 

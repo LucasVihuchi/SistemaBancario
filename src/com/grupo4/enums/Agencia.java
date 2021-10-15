@@ -21,6 +21,6 @@ public enum Agencia {
                 return ag;
             }
         }
-        return null;
+        return A0001;
     }
 }

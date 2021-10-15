@@ -1,6 +1,5 @@
 package com.grupo4.repositorios;
 
-import com.grupo4.contas.ContaPoupanca;
 import com.grupo4.enums.Agencia;
 import com.grupo4.exceptions.CpfInexistenteException;
 import com.grupo4.exceptions.UsuarioExistenteException;
@@ -64,6 +63,15 @@ public class UsuarioRepositorio {
 
     public static boolean isUsuarioCadastrado(String cpfExt) {
         return listaUsuarios.containsKey(cpfExt);
+    }
+
+    public static boolean isPresidenteCadastrado() {
+        for (Usuario usuario : listaUsuarios.values()) {
+            if (usuario instanceof Presidente) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static Usuario getUsuario(String cpfExt) throws CpfInexistenteException {

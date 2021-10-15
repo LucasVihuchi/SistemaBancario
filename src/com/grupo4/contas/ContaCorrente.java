@@ -14,6 +14,7 @@ import com.grupo4.segurovida.SeguroVida;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class ContaCorrente extends Conta{
     static {
@@ -129,7 +130,7 @@ public class ContaCorrente extends Conta{
 
     }
 
-    public void contrataSeguroVida(double valorSeguradoExt, int qtdMesesExt, String... segurados) throws SaldoInsuficienteException, ValorNegativoException, CpfInexistenteException, SeguroExistenteException, IOException {
+    public void contrataSeguroVida(double valorSeguradoExt, int qtdMesesExt, List<String> segurados) throws SaldoInsuficienteException, ValorNegativoException, CpfInexistenteException, SeguroExistenteException, IOException {
         SeguroVida seguroVidaTemp = new SeguroVida(this.cpfTitular, valorSeguradoExt, qtdMesesExt, segurados);
         SeguroVidaRepositorio.adicionaSeguroVida(seguroVidaTemp);
         this.saldo -= (valorSeguradoExt * TaxasConta.taxaContratacaoSeguroDeVida);
