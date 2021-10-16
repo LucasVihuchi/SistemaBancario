@@ -59,6 +59,7 @@ public class SistemaInterno {
                     realizaCadastroConta();
                 }
                 case 0 -> {
+                    leitor.close();
                     System.exit(0);
                 }
                 default -> {
@@ -96,14 +97,17 @@ public class SistemaInterno {
             usuarioLogin = UsuarioRepositorio.getUsuario(cpfLogin);
         } catch (CpfInexistenteException e) {
             System.out.println(e.getMessage() + "\n");
+            leitor.close();
             return null;
         }
         try {
             usuarioLogin.logar(senhaLogin);
         } catch (SenhaIncorretaException e) {
             System.out.println(e.getMessage());
+            leitor.close();
             return null;
         }
+        leitor.close();
         return usuarioLogin;
     }
 
@@ -131,6 +135,7 @@ public class SistemaInterno {
                 System.out.println("\nValor inserido inválido. Retornando ao início da seleção de conta...\n");
                 continue;
             } else if (opcaoConta == 0) {
+                leitor.close();
                 System.exit(0);
             } else if (opcaoConta == 1) {
                 ContaCorrente contaCorrenteLogada;
@@ -172,6 +177,7 @@ public class SistemaInterno {
                     }
 
                     if (opcaoOperacao == 0) {
+                        leitor.close();
                         System.exit(0);
                     }
 
@@ -217,6 +223,7 @@ public class SistemaInterno {
                                 continue;
                             } catch (IOException e) {
                                 System.out.println("Erro de escrita de arquivos");
+                                leitor.close();
                                 System.exit(1);
                             }
                             System.out.println("\nO valor de R$ " + String.format("%.2f", valorSaque) + " foi sacado com sucesso!");
@@ -231,6 +238,7 @@ public class SistemaInterno {
                                 continue;
                             } catch (IOException e) {
                                 System.out.println("Erro de escrita de arquivos");
+                                leitor.close();
                                 System.exit(1);
                             }
                             System.out.println("\nO valor de R$ " + String.format("%.2f", valorDeposito) + " foi depositado com sucesso!");
@@ -255,6 +263,7 @@ public class SistemaInterno {
                                 continue;
                             } catch (IOException e) {
                                 System.out.println("Erro de escrita de arquivos");
+                                leitor.close();
                                 System.exit(1);
                             }
                             System.out.println("\nO valor de R$ " + String.format("%.2f", valorTransferencia) + " foi transferido com sucesso!");
@@ -265,6 +274,7 @@ public class SistemaInterno {
                                 contaCorrenteLogada.geraRelatorioTributacao();
                             } catch (IOException e) {
                                 System.out.println("Erro de leitura/escrita de arquivos");
+                                leitor.close();
                                 System.exit(1);
                             }
                             System.out.println("\nRelatório gerado com sucesso!");
@@ -308,6 +318,7 @@ public class SistemaInterno {
                                 continue;
                             } catch (IOException e) {
                                 System.out.println("Erro de escrita de arquivos");
+                                leitor.close();
                                 System.exit(1);
                             }
                             System.out.println("\nO seguro no valor de R$ " + String.format("%.2f", valorTotalSegurado) + " foi contratado com sucesso!");
@@ -318,6 +329,7 @@ public class SistemaInterno {
                                     gerenteLogado.geraRelatorioNumContas();
                                 } catch (IOException e) {
                                     System.out.println("Erro de escrita de arquivos");
+                                    leitor.close();
                                     System.exit(1);
                                 }
                             } else if (usuarioExt instanceof Diretor || usuarioExt instanceof Presidente) {
@@ -355,6 +367,7 @@ public class SistemaInterno {
                                         diretorLogado.geraRelatorioNumContas(agencias.toArray(new Agencia[agencias.size()]));
                                     } catch (IOException e) {
                                         System.out.println("Erro de escrita de arquivos");
+                                        leitor.close();
                                         System.exit(1);
                                     }
                                 } else if (usuarioExt instanceof Presidente) {
@@ -362,6 +375,7 @@ public class SistemaInterno {
                                         presidenteLogado.geraRelatorioNumContas(agencias.toArray(new Agencia[agencias.size()]));
                                     } catch (IOException e) {
                                         System.out.println("Erro de escrita de arquivos");
+                                        leitor.close();
                                         System.exit(1);
                                     }
                                 }
@@ -374,6 +388,7 @@ public class SistemaInterno {
                                     diretorLogado.geraRelatorioClientesBanco();
                                 } catch (IOException e) {
                                     System.out.println("Erro de escrita de arquivos");
+                                    leitor.close();
                                     System.exit(1);
                                 }
                             } else if (usuarioExt instanceof Presidente) {
@@ -381,6 +396,7 @@ public class SistemaInterno {
                                     presidenteLogado.geraRelatorioClientesBanco();
                                 } catch (IOException e) {
                                     System.out.println("Erro de escrita de arquivos");
+                                    leitor.close();
                                     System.exit(1);
                                 }
                             }
@@ -391,6 +407,7 @@ public class SistemaInterno {
                                 presidenteLogado.geraRelatorioCapitalBanco();
                             } catch (IOException e) {
                                 System.out.println("Erro de escrita de arquivos");
+                                leitor.close();
                                 System.exit(1);
                             }
                             System.out.println("\nRelatório gerado com sucesso!");
@@ -441,6 +458,7 @@ public class SistemaInterno {
                     }
 
                     if (opcaoOperacao == 0) {
+                        leitor.close();
                         System.exit(0);
                     }
 
@@ -486,6 +504,7 @@ public class SistemaInterno {
                                 continue;
                             } catch (IOException e) {
                                 System.out.println("Erro de escrita de arquivos");
+                                leitor.close();
                                 System.exit(1);
                             }
                             System.out.println("\nO valor de R$ " + String.format("%.2f", valorSaque) + " foi sacado com sucesso!");
@@ -500,6 +519,7 @@ public class SistemaInterno {
                                 continue;
                             } catch (IOException e) {
                                 System.out.println("Erro de escrita de arquivos");
+                                leitor.close();
                                 System.exit(1);
                             }
                             System.out.println("\nO valor de R$ " + String.format("%.2f", valorDeposito) + " foi depositado com sucesso!");
@@ -523,6 +543,7 @@ public class SistemaInterno {
                                 continue;
                             } catch (IOException e) {
                                 System.out.println("Erro de escrita de arquivos");
+                                leitor.close();
                                 System.exit(1);
                             }
                             System.out.println("\nO valor de R$ " + String.format("%.2f", valorTransferencia) + " foi transferido com sucesso!");
@@ -540,6 +561,7 @@ public class SistemaInterno {
                                 continue;
                             } catch (IOException e) {
                                 System.out.println("Erro de escrita de arquivos");
+                                leitor.close();
                                 System.exit(1);
                             }
                             System.out.println("\nRelatório gerado com sucesso!");
@@ -550,6 +572,7 @@ public class SistemaInterno {
                                     gerenteLogado.geraRelatorioNumContas();
                                 } catch (IOException e) {
                                     System.out.println("Erro de escrita de arquivos");
+                                    leitor.close();
                                     System.exit(1);
                                 }
                             } else if (usuarioExt instanceof Diretor || usuarioExt instanceof Presidente) {
@@ -585,6 +608,7 @@ public class SistemaInterno {
                                         diretorLogado.geraRelatorioNumContas(agencias.toArray(new Agencia[agencias.size()]));
                                     } catch (IOException e) {
                                         System.out.println("Erro de escrita de arquivos");
+                                        leitor.close();
                                         System.exit(1);
                                     }
                                 } else if (usuarioExt instanceof Presidente) {
@@ -592,6 +616,7 @@ public class SistemaInterno {
                                         presidenteLogado.geraRelatorioNumContas(agencias.toArray(new Agencia[agencias.size()]));
                                     } catch (IOException e) {
                                         System.out.println("Erro de escrita de arquivos");
+                                        leitor.close();
                                         System.exit(1);
                                     }
                                 }
@@ -604,6 +629,7 @@ public class SistemaInterno {
                                     diretorLogado.geraRelatorioClientesBanco();
                                 } catch (IOException e) {
                                     System.out.println("Erro de escrita de arquivos");
+                                    leitor.close();
                                     System.exit(1);
                                 }
                             } else if (usuarioExt instanceof Presidente) {
@@ -611,6 +637,7 @@ public class SistemaInterno {
                                     presidenteLogado.geraRelatorioClientesBanco();
                                 } catch (IOException e) {
                                     System.out.println("Erro de escrita de arquivos");
+                                    leitor.close();
                                     System.exit(1);
                                 }
                             }
@@ -621,6 +648,7 @@ public class SistemaInterno {
                                 presidenteLogado.geraRelatorioCapitalBanco();
                             } catch (IOException e) {
                                 System.out.println("Erro de escrita de arquivos");
+                                leitor.close();
                                 System.exit(1);
                             }
                             System.out.println("\nRelatório gerado com sucesso!");
@@ -654,6 +682,7 @@ public class SistemaInterno {
                 System.out.println("\nValor inserido inválido. Retornando ao início do cadastro...\n");
                 continue;
             } else if (opcaoCadastro == 0){
+                leitor.close();
                 return;
             }
             leitor.nextLine();
@@ -688,6 +717,7 @@ public class SistemaInterno {
                     continue;
                 } catch (IOException e) {
                     System.out.println("Erro de escrita de arquivos");
+                    leitor.close();
                     System.exit(1);
                 }
                 System.out.println("Conta corrente cadastrada com sucesso!");
@@ -701,11 +731,13 @@ public class SistemaInterno {
                     continue;
                 } catch (IOException e) {
                     System.out.println("Erro de escrita de arquivos");
+                    leitor.close();
                     System.exit(1);
                 }
                 System.out.println("Conta poupança cadastrada com sucesso!");
             }
             System.out.println();
+            leitor.close();
             return;
         }
     }
@@ -737,6 +769,7 @@ public class SistemaInterno {
                 System.out.println("\nValor inserido inválido. Retornando ao início do cadastro...\n");
                 continue;
             } else if (opcaoCadastro == 0){
+                leitor.close();
                 return false;
             }
 
@@ -755,6 +788,7 @@ public class SistemaInterno {
                     continue;
                 } catch (IOException e) {
                     System.out.println("Erro de escrita de arquivos");
+                    leitor.close();
                     System.exit(1);
                 }
                 System.out.println("\nCliente cadastrado com sucesso!");
@@ -778,6 +812,7 @@ public class SistemaInterno {
                                     continue escolhaTipoUsuario;
                                 } catch (IOException e) {
                                     System.out.println("Erro de escrita de arquivos");
+                                    leitor.close();
                                     System.exit(1);
                                 }
                                 System.out.println("\nGerente cadastrado com sucesso!");
@@ -791,6 +826,7 @@ public class SistemaInterno {
                                     continue escolhaTipoUsuario;
                                 } catch (IOException e) {
                                     System.out.println("Erro de escrita de arquivos");
+                                    leitor.close();
                                     System.exit(1);
                                 }
                                 System.out.println("\nDiretor cadastrado com sucesso!");
@@ -808,6 +844,7 @@ public class SistemaInterno {
                                     continue escolhaTipoUsuario;
                                 } catch (IOException e) {
                                     System.out.println("Erro de escrita de arquivos");
+                                    leitor.close();
                                     System.exit(1);
                                 }
                                 System.out.println("\nPresidente cadastro com sucesso!");
@@ -827,6 +864,7 @@ public class SistemaInterno {
                     break;
                 }
             }
+            leitor.close();
             return true;
         }
     }
