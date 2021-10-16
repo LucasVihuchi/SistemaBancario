@@ -16,10 +16,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Gerente extends Funcionario{
     private Agencia idAgencia;
-
-    static {
-        Gerente.cargo = Cargo.GERENTE;
-    }
+    private static final Cargo cargo = Cargo.GERENTE;
 
     public Gerente(String nomeExt, String cpfExt, String senhaExt, Agencia idAgenciaExt) {
         super(nomeExt, cpfExt, senhaExt);
@@ -76,5 +73,9 @@ public class Gerente extends Funcionario{
 
     public Agencia getIdAgencia() {
         return this.idAgencia;
+    }
+
+    public static Cargo getCargo() {
+        return cargo;
     }
 }

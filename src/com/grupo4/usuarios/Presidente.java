@@ -18,12 +18,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class Presidente extends Funcionario implements GeradorRelatorioDiretoria{
-    static {
-        Presidente.cargo = Cargo.PRESIDENTE;
-    }
+    private static final Cargo cargo = Cargo.PRESIDENTE;
 
     public Presidente(String nomeExt, String cpfExt, String senhaExt) {
         super(nomeExt, cpfExt, senhaExt);
+    }
+
+    public static Cargo getCargo() {
+        return cargo;
     }
 
     public void geraRelatorioCapitalBanco() throws IOException {

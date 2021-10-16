@@ -13,6 +13,9 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.Locale;
 
+/**
+ * A classe conta
+ */
 public abstract class Conta {
     protected String cpfTitular;
     protected double saldo;
@@ -136,7 +139,7 @@ public abstract class Conta {
     }
 
     public static TipoConta getTipo() {
-        return Conta.tipo;
+        return tipo;
     }
 
     protected void atualizaSaldo(TipoConta tipoConta, String cpfUsuario) throws IOException {

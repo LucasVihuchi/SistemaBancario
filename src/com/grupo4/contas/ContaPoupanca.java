@@ -15,10 +15,7 @@ import java.time.format.DateTimeFormatter;
 
 public class ContaPoupanca extends Conta{
     private int aniversarioConta;
-
-    static {
-        ContaPoupanca.tipo = TipoConta.POUPANCA;
-    }
+    private static final TipoConta tipo = TipoConta.POUPANCA;
 
     public ContaPoupanca(String cpfTitularExt, Agencia idAgenciaExt) {
         super(cpfTitularExt, idAgenciaExt);
@@ -96,6 +93,10 @@ public class ContaPoupanca extends Conta{
 
     public int getAniversarioConta() {
         return this.aniversarioConta;
+    }
+
+    public static TipoConta getTipo() {
+        return tipo;
     }
 
     protected void atualizaAniversarioConta() throws IOException {

@@ -17,9 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ContaCorrente extends Conta {
-    static {
-        ContaCorrente.tipo = TipoConta.CORRENTE;
-    }
+    private static final TipoConta tipo = TipoConta.CORRENTE;
 
     public ContaCorrente(String cpfTitularExt, Agencia idAgenciaExt) {
         super(cpfTitularExt, idAgenciaExt);
@@ -28,6 +26,10 @@ public class ContaCorrente extends Conta {
     // Construtor usado apenas para carregamento inicial do sistema
     public ContaCorrente(String cpfTitularExt, Agencia idAgenciaExt, double saldoExt) {
         super(cpfTitularExt, idAgenciaExt, saldoExt);
+    }
+
+    public static TipoConta getTipo() {
+        return tipo;
     }
 
     public void geraRelatorioTributacao() throws IOException {
