@@ -14,15 +14,6 @@ import com.grupo4.usuarios.*;
 import java.io.IOException;
 import java.util.*;
 
-// 1 - Carrega as informações dos arquivos
-// 2 - pergunta se quer fazer login ou cadastro de contas
-
-// CADASTRO
-// 3.B - Perguntar os dados do cliente se ele tiver cadastro, só loga, senão cria cadastro de cliente
-// 4.B - Perguntar os dados da conta
-// 5.B - Fecha o cadastro
-
-
 public class SistemaInterno {
 
     public static void main(String[] args) {
@@ -97,17 +88,14 @@ public class SistemaInterno {
             usuarioLogin = UsuarioRepositorio.getUsuario(cpfLogin);
         } catch (CpfInexistenteException e) {
             System.out.println(e.getMessage() + "\n");
-            leitor.close();
             return null;
         }
         try {
             usuarioLogin.logar(senhaLogin);
         } catch (SenhaIncorretaException e) {
             System.out.println(e.getMessage());
-            leitor.close();
             return null;
         }
-        leitor.close();
         return usuarioLogin;
     }
 
@@ -682,7 +670,6 @@ public class SistemaInterno {
                 System.out.println("\nValor inserido inválido. Retornando ao início do cadastro...\n");
                 continue;
             } else if (opcaoCadastro == 0){
-                leitor.close();
                 return;
             }
             leitor.nextLine();
@@ -737,7 +724,6 @@ public class SistemaInterno {
                 System.out.println("Conta poupança cadastrada com sucesso!");
             }
             System.out.println();
-            leitor.close();
             return;
         }
     }
@@ -769,7 +755,6 @@ public class SistemaInterno {
                 System.out.println("\nValor inserido inválido. Retornando ao início do cadastro...\n");
                 continue;
             } else if (opcaoCadastro == 0){
-                leitor.close();
                 return false;
             }
 
@@ -864,7 +849,6 @@ public class SistemaInterno {
                     break;
                 }
             }
-            leitor.close();
             return true;
         }
     }
