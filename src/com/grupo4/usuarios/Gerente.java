@@ -34,13 +34,15 @@ public class Gerente extends Funcionario{
         System.out.println("O numero de contas poupança na agência " +
                 this.idAgencia.getIdAgencia() + " é igual a " + qtdContasPoupanca);
         System.out.println("O numero de total de contas na agência " +
-                this.idAgencia.getIdAgencia() + " é igual a " + qtdContasPoupanca+qtdContasCorrente);
+                this.idAgencia.getIdAgencia() + " é igual a " + (qtdContasPoupanca+qtdContasCorrente));
 
         LocalDateTime momentoAtual = LocalDateTime.now();
         DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        DateTimeFormatter formatoArquivo = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss");
+
 
         File pathRelatorioNumContas = new File("C:\\RepositorioBanco\\Relatorios\\Gerencia\\");
-        File relatorioNumContas = new File(pathRelatorioNumContas.getAbsolutePath() + "\\NumContas-" + momentoAtual + ".txt");
+        File relatorioNumContas = new File(pathRelatorioNumContas.getAbsolutePath() + "\\NumContas-" + formatoArquivo.format(momentoAtual) + ".txt");
 
         if(!pathRelatorioNumContas.exists()) {
             pathRelatorioNumContas.mkdirs();
@@ -65,7 +67,7 @@ public class Gerente extends Funcionario{
                     this.idAgencia.getIdAgencia() + " é igual a " + qtdContasPoupanca);
             relatorioNumContasWriterBuff.newLine();
             relatorioNumContasWriterBuff.append("O numero de total de contas na agência " +
-                    this.idAgencia.getIdAgencia() + " é igual a " + qtdContasPoupanca+qtdContasCorrente);
+                    this.idAgencia.getIdAgencia() + " é igual a " + (qtdContasPoupanca+qtdContasCorrente));
 
         } catch (IOException | CpfInexistenteException e) {
             System.out.println("Erro de escrita de arquivos");

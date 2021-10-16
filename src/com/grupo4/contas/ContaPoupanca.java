@@ -46,9 +46,10 @@ public class ContaPoupanca extends Conta{
 
         LocalDateTime momentoAtual = LocalDateTime.now();
         DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        DateTimeFormatter formatoArquivo = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss");
 
         File pathRelatorioSimulacaoRendimento = new File ("C:\\RepositorioBanco\\Relatorios\\Clientes\\Simulacoes\\");
-        File relatorioSimulacaoRendimento = new File(pathRelatorioSimulacaoRendimento.getAbsolutePath() + "\\" + this.cpfTitular + " " + momentoAtual + ".txt");
+        File relatorioSimulacaoRendimento = new File(pathRelatorioSimulacaoRendimento.getAbsolutePath() + "\\" + this.cpfTitular + " " + formatoArquivo.format(momentoAtual) + ".txt");
 
         if (!pathRelatorioSimulacaoRendimento.exists()) {
             pathRelatorioSimulacaoRendimento.mkdirs();
@@ -72,7 +73,7 @@ public class ContaPoupanca extends Conta{
         }
     }
 
-    public void render() {
+    public void render() throws IOException {
         boolean isDataAniversario = this.aniversarioConta == LocalDate.now().getDayOfMonth();
         boolean isUltimoDiaMes = (LocalDate.now().getDayOfMonth() == LocalDate.now().lengthOfMonth());
         boolean isAniversarioMaiorQueDiasMes = (this.aniversarioConta > LocalDate.now().lengthOfMonth());
@@ -80,6 +81,7 @@ public class ContaPoupanca extends Conta{
         if(isDataAniversario || (isUltimoDiaMes && isAniversarioMaiorQueDiasMes)) {
             this.saldo *= (1 + TaxasConta.taxaJuros);
         }
+        atualizaSaldo(TipoConta.POUPANCA, this.cpfTitular);
     }
 
     @Override

@@ -9,10 +9,8 @@ import com.grupo4.interfaces.TaxasConta;
 import com.grupo4.repositorios.ContaCorrenteRepositorio;
 import com.grupo4.repositorios.ContaPoupancaRepositorio;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.Locale;
 
 public abstract class Conta {
     protected String cpfTitular;
@@ -33,24 +31,34 @@ public abstract class Conta {
 
     public void saque(double valor) throws ValorNegativoException, SaldoInsuficienteException, IOException {
         if (valor <= 0) {
-            throw new ValorNegativoException("Saque de valores negativos não é permitido");
+            throw new ValorNegativoException("\nSaque de valores negativos não é permitido!");
         }
         if (this.saldo < (valor + TaxasConta.taxaSaque)) {
             throw new SaldoInsuficienteException();
         }
-        this.saldo -= valor - TaxasConta.taxaSaque;
+        this.saldo -= (valor + TaxasConta.taxaSaque);
         registraTransacao(valor, "saque");
+        if (this instanceof ContaCorrente) {
+            atualizaSaldo(TipoConta.CORRENTE, this.cpfTitular);
+        } else if (this instanceof ContaPoupanca) {
+            atualizaSaldo(TipoConta.POUPANCA, this.cpfTitular);
+        }
     }
 
     public void deposito(double valor) throws ValorNegativoException, IOException {
         if (valor <= TaxasConta.taxaDeposito) {
-            throw new ValorNegativoException("Depósito de valores negativos não é permitido");
+            throw new ValorNegativoException("\nDepósito de valores negativos não é permitido!");
         }
-        this.saldo += valor - TaxasConta.taxaDeposito;
+        this.saldo += (valor - TaxasConta.taxaDeposito);
         registraTransacao(valor, "deposito");
+        if (this instanceof ContaCorrente) {
+            atualizaSaldo(TipoConta.CORRENTE, this.cpfTitular);
+        } else if (this instanceof ContaPoupanca) {
+            atualizaSaldo(TipoConta.POUPANCA, this.cpfTitular);
+        }
     }
 
-    public void transferencia(double valor, String cpfDestinatario, TipoConta tipo) throws ValorNegativoException, SaldoInsuficienteException, CpfInexistenteException, IOException {
+    public void transferencia(double valor, String cpfDestinatario, TipoConta tipoExt) throws ValorNegativoException, SaldoInsuficienteException, CpfInexistenteException, IOException {
         if (valor <= 0) {
             throw new ValorNegativoException("Transferência de valores negativos não é permitido");
         }
@@ -58,13 +66,20 @@ public abstract class Conta {
             throw new SaldoInsuficienteException();
         }
 
-        this.saldo -= (valor + TaxasConta.taxaTransferencia);
-        if (tipo == TipoConta.CORRENTE) {
+        if (tipoExt.equals(TipoConta.CORRENTE)) {
             ContaCorrenteRepositorio.getContaCorrente(cpfDestinatario).saldo += valor;
-        } else if (tipo == TipoConta.POUPANCA) {
+        } else if (tipoExt.equals(TipoConta.POUPANCA)) {
             ContaPoupancaRepositorio.getContaPoupanca(cpfDestinatario).saldo += valor;
         }
+        this.saldo -= (valor + TaxasConta.taxaTransferencia);
         registraTransacao(valor, "transferencia", cpfDestinatario);
+
+        if (this instanceof ContaCorrente) {
+            atualizaSaldo(TipoConta.CORRENTE, this.cpfTitular);
+        } else if (this instanceof ContaPoupanca) {
+            atualizaSaldo(TipoConta.POUPANCA, this.cpfTitular);
+        }
+        atualizaSaldo(tipoExt, cpfDestinatario);
     }
 
     protected void registraTransacao(double valor, String tipoTransacao, String... cpfDestinatario) throws IOException {
@@ -83,9 +98,9 @@ public abstract class Conta {
             BufferedWriter historicoTransacoesDBWriterBuff = new BufferedWriter(historicoTransacoesDBWriter)) {
 
             historicoTransacoesDBWriterBuff.append(tipoTransacao + "¨¨" + this.cpfTitular + "¨¨" + valor + "¨¨");
-            if (this.tipo.equals(TipoConta.CORRENTE)) {
+            if (this instanceof ContaCorrente) {
                 historicoTransacoesDBWriterBuff.append("c");
-            } else if (this.tipo.equals(TipoConta.POUPANCA)) {
+            } else if (this instanceof ContaPoupanca) {
                 historicoTransacoesDBWriterBuff.append("p");
             }
             if (!(cpfDestinatario.length == 0)) {
@@ -116,5 +131,50 @@ public abstract class Conta {
 
     public static TipoConta getTipo() {
         return Conta.tipo;
+    }
+
+    protected void atualizaSaldo(TipoConta tipoConta, String cpfUsuario) throws IOException {
+        File pathContaBD = new File("C:\\RepositorioBanco\\");
+        File contaBD = null;
+        if (tipoConta.equals(TipoConta.CORRENTE)) {
+            contaBD = new File(pathContaBD.getAbsolutePath() + "\\contaCorrenteRepositorio.txt");
+        } else if (tipoConta.equals(TipoConta.POUPANCA)) {
+            contaBD = new File(pathContaBD.getAbsolutePath() + "\\contaPoupancaRepositorio.txt");
+        }
+
+        if (!pathContaBD.exists()) {
+            pathContaBD.mkdirs();
+        }
+
+        if (!contaBD.exists()) {
+            contaBD.createNewFile();
+        }
+
+        StringBuilder conteudoBD = new StringBuilder();
+
+        try (FileReader contaBDReader = new FileReader(contaBD);
+             BufferedReader contaBDReaderBuff = new BufferedReader(contaBDReader)) {
+            String linha;
+            while ((linha = contaBDReaderBuff.readLine()) != null) {
+                String[] separada = linha.split("¨¨");
+                if (separada[0].equals(cpfUsuario)) {
+                    if(tipoConta.equals(TipoConta.CORRENTE)) {
+                        linha = linha.replace(separada[1], String.format(Locale.ROOT, "%.2f", ContaCorrenteRepositorio.getContaCorrente(cpfUsuario).getSaldo()));
+                    } else if(tipoConta.equals(TipoConta.POUPANCA)) {
+                        linha = linha.replace(separada[1], String.format(Locale.ROOT, "%.2f", ContaPoupancaRepositorio.getContaPoupanca(cpfUsuario).getSaldo()));
+                    }
+                }
+                conteudoBD.append(linha + "\n");
+            }
+        } catch (IOException | CpfInexistenteException e) {
+            System.out.println("Erro de leitura de arquivos!");
+        }
+
+        try (FileWriter contaDBWriter = new FileWriter(contaBD);
+             BufferedWriter contaDBWriterBuff = new BufferedWriter(contaDBWriter)) {
+            contaDBWriterBuff.append(conteudoBD);
+        } catch (IOException e) {
+            System.out.println("Erro de escrita de arquivos!");
+        }
     }
 }

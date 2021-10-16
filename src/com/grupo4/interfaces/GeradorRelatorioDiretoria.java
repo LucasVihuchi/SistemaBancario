@@ -14,6 +14,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -39,20 +40,21 @@ public interface GeradorRelatorioDiretoria {
                 " é igual a " + qtdContasPoupanca);
         System.out.println("O numero de total de contas na agência " +
                 (agenciaExt.length == 0 ? "no banco" : "nas agências selecionadas " + Arrays.toString(agenciaExt)) +
-                " é igual a " + qtdContasPoupanca+qtdContasCorrente);
+                " é igual a " + (qtdContasPoupanca+qtdContasCorrente));
 
         LocalDateTime momentoAtual = LocalDateTime.now();
         DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        DateTimeFormatter formatoArquivo = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss");
 
 
         File pathRelatorioNumContas;
         File relatorioNumContas;
         if (this instanceof Diretor) {
             pathRelatorioNumContas = new File("C:\\RepositorioBanco\\Relatorios\\Diretoria\\");
-            relatorioNumContas = new File(pathRelatorioNumContas.getAbsolutePath() + "\\NumContas-" + momentoAtual + ".txt");
+            relatorioNumContas = new File(pathRelatorioNumContas.getAbsolutePath() + "\\NumContas-" + formatoArquivo.format(momentoAtual) + ".txt");
         } else {
             pathRelatorioNumContas = new File("C:\\RepositorioBanco\\Relatorios\\Presidencia\\");
-            relatorioNumContas = new File(pathRelatorioNumContas.getAbsolutePath() + "\\NumContas-" + momentoAtual + ".txt");
+            relatorioNumContas = new File(pathRelatorioNumContas.getAbsolutePath() + "\\NumContas-" + formatoArquivo.format(momentoAtual) + ".txt");
         }
 
         if(!pathRelatorioNumContas.exists()) {
@@ -78,7 +80,7 @@ public interface GeradorRelatorioDiretoria {
             relatorioNumContasWriterBuff.newLine();
             relatorioNumContasWriterBuff.append("O numero de total de contas na agência " +
                     (agenciaExt.length == 0 ? "no banco" : "nas agências selecionadas " + Arrays.toString(agenciaExt)) +
-                    " é igual a " + qtdContasPoupanca+qtdContasCorrente);
+                    " é igual a " + (qtdContasPoupanca+qtdContasCorrente));
 
         } catch (IOException e) {
             System.out.println("Erro de escrita de arquivos");
@@ -86,20 +88,22 @@ public interface GeradorRelatorioDiretoria {
     }
 
     default void geraRelatorioClientesBanco() throws IOException {
-        List<Usuario> listaUsuarios = UsuarioRepositorio.getUsuarios();
+        List<Usuario> listaUsuarios = new ArrayList<>(UsuarioRepositorio.getUsuarios());
         Collections.sort(listaUsuarios);
 
         LocalDateTime momentoAtual = LocalDateTime.now();
         DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        DateTimeFormatter formatoArquivo = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss");
+
 
         File pathrelatorioClientesBanco;
         File relatorioClientesBanco;
         if (this instanceof Diretor) {
             pathrelatorioClientesBanco = new File("C:\\RepositorioBanco\\Relatorios\\Diretoria\\");
-            relatorioClientesBanco = new File(pathrelatorioClientesBanco.getAbsolutePath() + "\\ClientesBanco-" + momentoAtual + ".txt");
+            relatorioClientesBanco = new File(pathrelatorioClientesBanco.getAbsolutePath() + "\\ClientesBanco-" + formatoArquivo.format(momentoAtual) + ".txt");
         } else {
             pathrelatorioClientesBanco = new File("C:\\RepositorioBanco\\Relatorios\\Presidencia\\");
-            relatorioClientesBanco = new File(pathrelatorioClientesBanco.getAbsolutePath() + "\\ClientesBanco-" + momentoAtual + ".txt");
+            relatorioClientesBanco = new File(pathrelatorioClientesBanco.getAbsolutePath() + "\\ClientesBanco-" + formatoArquivo.format(momentoAtual) + ".txt");
         }
 
         if (!pathrelatorioClientesBanco.exists()) {

@@ -7,7 +7,6 @@ import com.grupo4.interfaces.TaxasConta;
 import com.grupo4.repositorios.ContaCorrenteRepositorio;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 
 public class SeguroVida {
@@ -22,7 +21,7 @@ public class SeguroVida {
         if (qtdMesesExt <= 0 || valorSeguradoExt <= 0) {
             throw new ValorNegativoException();
         }
-        if((valorSeguradoExt * TaxasConta.taxaContratacaoSeguroDeVida) > ContaCorrenteRepositorio.getContaCorrente(this.cpfSegurado).getSaldo()) {
+        if((valorSeguradoExt * TaxasConta.taxaContratacaoSeguroDeVida) > ContaCorrenteRepositorio.getContaCorrente(cpfSeguradoExt).getSaldo()) {
             throw new SaldoInsuficienteException();
         }
         this.cpfSegurado = cpfSeguradoExt;

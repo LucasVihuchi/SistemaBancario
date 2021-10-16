@@ -95,7 +95,7 @@ public class SistemaInterno {
         try {
             usuarioLogin = UsuarioRepositorio.getUsuario(cpfLogin);
         } catch (CpfInexistenteException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage() + "\n");
             return null;
         }
         try {
@@ -174,7 +174,6 @@ public class SistemaInterno {
                     if (opcaoOperacao == 0) {
                         System.exit(0);
                     }
-                    System.out.println();
 
                     Gerente gerenteLogado = null;
                     Diretor diretorLogado = null;
@@ -220,7 +219,7 @@ public class SistemaInterno {
                                 System.out.println("Erro de escrita de arquivos");
                                 System.exit(1);
                             }
-                            System.out.println("O valor de R$ " + String.format("%.2f", valorSaque) + " foi sacado com sucesso!");
+                            System.out.println("\nO valor de R$ " + String.format("%.2f", valorSaque) + " foi sacado com sucesso!");
                         }
                         case 2 -> {
                             System.out.print("Insira o valor a ser depositado: ");
@@ -234,29 +233,31 @@ public class SistemaInterno {
                                 System.out.println("Erro de escrita de arquivos");
                                 System.exit(1);
                             }
-                            System.out.println("O valor de R$ " + String.format("%.2f", valorDeposito) + " foi depositado com sucesso!");
+                            System.out.println("\nO valor de R$ " + String.format("%.2f", valorDeposito) + " foi depositado com sucesso!");
                         }
                         case 3 -> {
                             System.out.print("Insira o valor a ser transferido: ");
                             double valorTransferencia = leitor.nextDouble();
                             System.out.print("Insira o cpf do destinatário: ");
+                            leitor.nextLine();
                             String cpfDestinatario = leitor.nextLine();
                             System.out.print("Escolha o tipo de conta:" +
                                     "\n1 - Conta Corrente" +
                                     "\n2 - Conta Poupança" +
                                     "\nOpção: ");
+
                             int idTipoConta = leitor.nextInt();
                             TipoConta tipoContaTransferencia = TipoConta.getTipoContaPorIndice(idTipoConta);
                             try {
                                 contaCorrenteLogada.transferencia(valorTransferencia, cpfDestinatario, tipoContaTransferencia);
                             } catch (ValorNegativoException | SaldoInsuficienteException | CpfInexistenteException e) {
-                                System.out.println(e.getMessage());
+                                System.out.println("\n" + e.getMessage());
                                 continue;
                             } catch (IOException e) {
                                 System.out.println("Erro de escrita de arquivos");
                                 System.exit(1);
                             }
-                            System.out.println("O valor de R$ " + String.format("%.2f", valorTransferencia) + " foi transferido com sucesso!");
+                            System.out.println("\nO valor de R$ " + String.format("%.2f", valorTransferencia) + " foi transferido com sucesso!");
                         }
                         case 4 -> contaCorrenteLogada.exibirSaldo();
                         case 5 -> {
@@ -269,13 +270,13 @@ public class SistemaInterno {
                             System.out.println("Relatório gerado com sucesso!");
                         }
                         case 6 -> {
-                            System.out.println("Insira o valor a ser segurado: ");
+                            System.out.print("Insira o valor a ser segurado: ");
                             double valorTotalSegurado = leitor.nextDouble();
-                            System.out.println("Insira em quantos meses deseja pagar o seguro: ");
+                            System.out.print("Insira em quantos meses deseja pagar o seguro: ");
                             int qtdMeses = leitor.nextInt();
                             List<String> segurados = new ArrayList<>();
                             while (true) {
-                                System.out.println("Escolha uma das opções abaixo:" +
+                                System.out.print("Escolha uma das opções abaixo:" +
                                         "\n1 - Adicionar novo segurado" +
                                         "\n0 - Finalizar" +
                                         "\nOpção: ");
@@ -303,13 +304,13 @@ public class SistemaInterno {
                             try {
                                 contaCorrenteLogada.contrataSeguroVida(valorTotalSegurado, qtdMeses, segurados);
                             } catch (SaldoInsuficienteException | ValorNegativoException | CpfInexistenteException | SeguroExistenteException e) {
-                                System.out.println(e.getMessage());
+                                System.out.println("\n" + e.getMessage());
                                 continue;
                             } catch (IOException e) {
                                 System.out.println("Erro de escrita de arquivos");
                                 System.exit(1);
                             }
-                            System.out.println("O seguro no valor de R$ " + String.format("%.2f", valorTotalSegurado) + " foi contratado com sucesso!");
+                            System.out.println("\nO seguro no valor de R$ " + String.format("%.2f", valorTotalSegurado) + " foi contratado com sucesso!");
                         }
                         case 7 -> {
                             if (usuarioExt instanceof Gerente) {
@@ -488,7 +489,7 @@ public class SistemaInterno {
                                 System.out.println("Erro de escrita de arquivos");
                                 System.exit(1);
                             }
-                            System.out.println("O valor de R$ " + String.format("%.2f", valorSaque) + " foi sacado com sucesso!");
+                            System.out.println("\nO valor de R$ " + String.format("%.2f", valorSaque) + " foi sacado com sucesso!");
                         }
                         case 2 -> {
                             System.out.print("Insira o valor a ser depositado: ");
@@ -502,7 +503,7 @@ public class SistemaInterno {
                                 System.out.println("Erro de escrita de arquivos");
                                 System.exit(1);
                             }
-                            System.out.println("O valor de R$ " + String.format("%.2f", valorDeposito) + " foi depositado com sucesso!");
+                            System.out.println("\nO valor de R$ " + String.format("%.2f", valorDeposito) + " foi depositado com sucesso!");
                         }
                         case 3 -> {
                             System.out.print("Insira o valor a ser transferido: ");
@@ -518,13 +519,13 @@ public class SistemaInterno {
                             try {
                                 contaPoupancaLogada.transferencia(valorTransferencia, cpfDestinatario, tipoContaTransferencia);
                             } catch (ValorNegativoException | SaldoInsuficienteException | CpfInexistenteException e) {
-                                System.out.println(e.getMessage());
+                                System.out.println("\n" + e.getMessage());
                                 continue;
                             } catch (IOException e) {
                                 System.out.println("Erro de escrita de arquivos");
                                 System.exit(1);
                             }
-                            System.out.println("O valor de R$ " + String.format("%.2f", valorTransferencia) + " foi transferido com sucesso!");
+                            System.out.println("\nO valor de R$ " + String.format("%.2f", valorTransferencia) + " foi transferido com sucesso!");
                         }
                         case 4 -> contaPoupancaLogada.exibirSaldo();
                         case 5 -> {
@@ -649,8 +650,6 @@ public class SistemaInterno {
             } catch (InputMismatchException e) {
                 System.out.println("\nValor inserido inválido. Retornando ao início do cadastro...\n");
                 continue;
-            } finally {
-                leitor.nextLine();
             }
 
             if (opcaoCadastro < 0 || opcaoCadastro > 2) {
@@ -733,16 +732,14 @@ public class SistemaInterno {
             } else if (opcaoCadastro == 0){
                 return false;
             }
-            leitor.nextLine();
+
             System.out.print("Insira seu nome completo: ");
             String nomeCadastro = leitor.nextLine();
             System.out.print("Insira seu CPF: ");
             String cpfCadastro = leitor.nextLine();
             System.out.print("Insira sua senha: ");
             String senhaCadastro = leitor.nextLine();
-            if (UsuarioRepositorio.isUsuarioCadastrado(cpfCadastro)) {
-                continue;
-            }
+            System.out.print("");
 
             if (opcaoCadastro == 1) {
                 Cliente clienteCadastro = new Cliente(nomeCadastro, cpfCadastro, senhaCadastro);
@@ -773,12 +770,12 @@ public class SistemaInterno {
                                     UsuarioRepositorio.adicionaUsuario(gerenteCadastro);
                                 } catch (UsuarioExistenteException e) {
                                     System.out.println(e.getMessage());
-                                    continue;
+                                    continue escolhaTipoUsuario;
                                 } catch (IOException e) {
                                     System.out.println("Erro de escrita de arquivos");
                                     System.exit(1);
                                 }
-                                System.out.println("\nGerente cadastro com sucesso!");
+                                System.out.println("\nGerente cadastrado com sucesso!");
                                 break;
                             case 3:
                                 Diretor diretorCadastro = new Diretor(nomeCadastro, cpfCadastro, senhaCadastro);
@@ -786,24 +783,24 @@ public class SistemaInterno {
                                     UsuarioRepositorio.adicionaUsuario(diretorCadastro);
                                 } catch (UsuarioExistenteException e) {
                                     System.out.println(e.getMessage());
-                                    continue;
+                                    continue escolhaTipoUsuario;
                                 } catch (IOException e) {
                                     System.out.println("Erro de escrita de arquivos");
                                     System.exit(1);
                                 }
-                                System.out.println("\nDiretor cadastro com sucesso!");
+                                System.out.println("\nDiretor cadastrado com sucesso!");
                                 break;
                             case 4:
                                 if (UsuarioRepositorio.isPresidenteCadastrado()) {
                                     System.out.println("Presidente já cadastrado no sistema!");
-                                    continue;
+                                    continue escolhaTipoUsuario;
                                 }
                                 Presidente presidenteCadastro = new Presidente(nomeCadastro, cpfCadastro, senhaCadastro);
                                 try {
                                     UsuarioRepositorio.adicionaUsuario(presidenteCadastro);
                                 } catch (UsuarioExistenteException e) {
                                     System.out.println(e.getMessage());
-                                    continue;
+                                    continue escolhaTipoUsuario;
                                 } catch (IOException e) {
                                     System.out.println("Erro de escrita de arquivos");
                                     System.exit(1);

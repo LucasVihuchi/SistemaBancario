@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class ContaCorrente extends Conta{
+public class ContaCorrente extends Conta {
     static {
         ContaCorrente.tipo = TipoConta.CORRENTE;
     }
@@ -33,15 +33,16 @@ public class ContaCorrente extends Conta{
     public void geraRelatorioTributacao() throws IOException {
         LocalDateTime momentoAtual = LocalDateTime.now();
         DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        DateTimeFormatter formatoArquivo = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss");
 
-        File pathHistoricoTransacoesDB = new File ("C:\\RepositorioBanco\\");
-        File historicoTransacoesBD = new File (pathHistoricoTransacoesDB.getAbsolutePath() + "\\historicoTransacoesRepositorio.txt");
+        File pathHistoricoTransacoesDB = new File("C:\\RepositorioBanco\\");
+        File historicoTransacoesBD = new File(pathHistoricoTransacoesDB.getAbsolutePath() + "\\historicoTransacoesRepositorio.txt");
 
         if (!pathHistoricoTransacoesDB.exists()) {
             pathHistoricoTransacoesDB.mkdirs();
         }
 
-        if(!historicoTransacoesBD.exists()) {
+        if (!historicoTransacoesBD.exists()) {
             historicoTransacoesBD.createNewFile();
         }
 
@@ -50,12 +51,12 @@ public class ContaCorrente extends Conta{
         double totalTaxasTransferencia = 0;
 
         try (FileReader historicoTransacoesDBReader = new FileReader(historicoTransacoesBD);
-             BufferedReader historicoTransacoesDBReaderBuff = new BufferedReader(historicoTransacoesDBReader)){
+             BufferedReader historicoTransacoesDBReaderBuff = new BufferedReader(historicoTransacoesDBReader)) {
 
             String linhaLida;
-            while ((linhaLida = historicoTransacoesDBReaderBuff.readLine()) != null) {
+            while (((linhaLida = historicoTransacoesDBReaderBuff.readLine()) != null)) {
                 String[] itensTemp = linhaLida.split("¨¨");
-                if(itensTemp[1].equals(this.cpfTitular) && itensTemp[3].equals("c")) {
+                if (itensTemp[1].equals(this.cpfTitular) && itensTemp[3].equals("c")) {
                     switch (itensTemp[0]) {
                         case "saque":
                             totalTaxasSaque += TaxasConta.taxaSaque;
@@ -74,18 +75,18 @@ public class ContaCorrente extends Conta{
         }
 
         File pathRelatorioTributacaoContaCorrente = new File("C:\\RepositorioBanco\\Relatorios\\Clientes\\");
-        File relatorioTributacaoContaCorrente = new File(pathRelatorioTributacaoContaCorrente.getAbsolutePath() + "\\" + this.cpfTitular + " " + momentoAtual + ".txt");
+        File relatorioTributacaoContaCorrente = new File(pathRelatorioTributacaoContaCorrente.getAbsolutePath() + "\\" + this.cpfTitular + " " + formatoArquivo.format(momentoAtual) + ".txt");
 
-        if(!pathRelatorioTributacaoContaCorrente.exists()) {
+        if (!pathRelatorioTributacaoContaCorrente.exists()) {
             pathRelatorioTributacaoContaCorrente.mkdirs();
         }
 
-        if(!relatorioTributacaoContaCorrente.exists()) {
+        if (!relatorioTributacaoContaCorrente.exists()) {
             relatorioTributacaoContaCorrente.createNewFile();
         }
 
         try (FileWriter relatorioTributacaoContaCorrenteWriter = new FileWriter(relatorioTributacaoContaCorrente);
-             BufferedWriter relatorioTributacaoContaCorrenteWriterBuff = new BufferedWriter(relatorioTributacaoContaCorrenteWriter)){
+             BufferedWriter relatorioTributacaoContaCorrenteWriterBuff = new BufferedWriter(relatorioTributacaoContaCorrenteWriter)) {
 
             relatorioTributacaoContaCorrenteWriterBuff.append("Relatório de tributação conta corrente - " + formatoBrasileiro.format(momentoAtual));
             relatorioTributacaoContaCorrenteWriterBuff.newLine();
@@ -135,6 +136,7 @@ public class ContaCorrente extends Conta{
         SeguroVidaRepositorio.adicionaSeguroVida(seguroVidaTemp);
         this.saldo -= (valorSeguradoExt * TaxasConta.taxaContratacaoSeguroDeVida);
         registraTransacao((valorSeguradoExt * TaxasConta.taxaContratacaoSeguroDeVida), "contratacaoSeguro");
+        atualizaSaldo(TipoConta.CORRENTE, this.cpfTitular);
     }
 
     public void pagaMensalidadeSeguroVida() throws CpfInexistenteException, SaldoInsuficienteException, IOException {
@@ -143,5 +145,6 @@ public class ContaCorrente extends Conta{
         }
         this.saldo -= SeguroVidaRepositorio.getSeguroVida(this.cpfTitular).calculaMensalidade();
         registraTransacao((SeguroVidaRepositorio.getSeguroVida(this.cpfTitular).calculaMensalidade()), "pagamentoSeguro");
+        atualizaSaldo(TipoConta.CORRENTE, this.cpfTitular);
     }
 }
