@@ -43,7 +43,7 @@ public class Presidente extends Funcionario implements GeradorRelatorioDiretoria
             capitalTotal += seguroVida.getValorPago();
         }
 
-        System.out.println("O capital total armazenado no banco é de: R$ " + String.format("%.2f", capitalTotal));
+        System.out.println("\nO capital total armazenado no banco é de: R$ " + String.format("%.2f", capitalTotal));
 
         LocalDateTime momentoAtual = LocalDateTime.now();
         DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");

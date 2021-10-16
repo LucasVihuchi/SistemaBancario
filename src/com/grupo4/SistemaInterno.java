@@ -267,7 +267,7 @@ public class SistemaInterno {
                                 System.out.println("Erro de leitura/escrita de arquivos");
                                 System.exit(1);
                             }
-                            System.out.println("Relatório gerado com sucesso!");
+                            System.out.println("\nRelatório gerado com sucesso!");
                         }
                         case 6 -> {
                             System.out.print("Insira o valor a ser segurado: ");
@@ -366,7 +366,7 @@ public class SistemaInterno {
                                     }
                                 }
                             }
-                            System.out.println("Relatório gerado com sucesso!");
+                            System.out.println("\nRelatório gerado com sucesso!");
                         }
                         case 8 -> {
                             if (usuarioExt instanceof Diretor) {
@@ -384,7 +384,7 @@ public class SistemaInterno {
                                     System.exit(1);
                                 }
                             }
-                            System.out.println("Relatório gerado com sucesso!");
+                            System.out.println("\nRelatório gerado com sucesso!");
                         }
                         case 9 -> {
                             try {
@@ -393,7 +393,7 @@ public class SistemaInterno {
                                 System.out.println("Erro de escrita de arquivos");
                                 System.exit(1);
                             }
-                            System.out.println("Relatório gerado com sucesso!");
+                            System.out.println("\nRelatório gerado com sucesso!");
                         }
                     }
 
@@ -443,7 +443,6 @@ public class SistemaInterno {
                     if (opcaoOperacao == 0) {
                         System.exit(0);
                     }
-                    System.out.println();
 
                     Gerente gerenteLogado = null;
                     Diretor diretorLogado = null;
@@ -508,6 +507,7 @@ public class SistemaInterno {
                         case 3 -> {
                             System.out.print("Insira o valor a ser transferido: ");
                             double valorTransferencia = leitor.nextDouble();
+                            leitor.nextLine();
                             System.out.print("Insira o cpf do destinatário: ");
                             String cpfDestinatario = leitor.nextLine();
                             System.out.print("Escolha o tipo de conta:" +
@@ -542,7 +542,7 @@ public class SistemaInterno {
                                 System.out.println("Erro de escrita de arquivos");
                                 System.exit(1);
                             }
-                            System.out.println("Relatório gerado com sucesso!");
+                            System.out.println("\nRelatório gerado com sucesso!");
                         }
                         case 6 -> {
                             if (usuarioExt instanceof Gerente) {
@@ -565,8 +565,6 @@ public class SistemaInterno {
                                     } catch (InputMismatchException e) {
                                         System.out.println("\nValor inserido inválido. Retornando ao menu anterior...\n");
                                         continue;
-                                    } finally {
-                                        leitor.nextLine();
                                     }
 
                                     if (opcaoAgencias == 1) {
@@ -598,7 +596,7 @@ public class SistemaInterno {
                                     }
                                 }
                             }
-                            System.out.println("Relatório gerado com sucesso!");
+                            System.out.println("\nRelatório gerado com sucesso!");
                         }
                         case 7 -> {
                             if (usuarioExt instanceof Diretor) {
@@ -616,7 +614,7 @@ public class SistemaInterno {
                                     System.exit(1);
                                 }
                             }
-                            System.out.println("Relatório gerado com sucesso!");
+                            System.out.println("\nRelatório gerado com sucesso!");
                         }
                         case 8 -> {
                             try {
@@ -625,7 +623,7 @@ public class SistemaInterno {
                                 System.out.println("Erro de escrita de arquivos");
                                 System.exit(1);
                             }
-                            System.out.println("Relatório gerado com sucesso!");
+                            System.out.println("\nRelatório gerado com sucesso!");
                         }
                     }
                 }
@@ -664,12 +662,21 @@ public class SistemaInterno {
             System.out.print("Insira o número da agência: ");
             int idAgenciaCadastro = leitor.nextInt();
             Agencia agenciaCadastro = Agencia.getAgenciaPorId(idAgenciaCadastro);
+            String senhaCadastro;
             try {
                 UsuarioRepositorio.getUsuario(cpfCadastro);
+                leitor.nextLine();
+                System.out.print("Usuário encontrado no sistema!\nInsira sua senha: ");
+                senhaCadastro = leitor.nextLine();
+                System.out.println();
+                UsuarioRepositorio.getUsuario(cpfCadastro).logar(senhaCadastro);
             } catch (CpfInexistenteException e) {
-                if(!realizaCadastroCliente()) {
+                if(!realizaCadastroCliente(cpfCadastro)) {
                     continue;
                 }
+            } catch (SenhaIncorretaException e) {
+                System.out.println("\n" + e.getMessage());
+                continue;
             }
 
             if(opcaoCadastro == 1) {
@@ -704,7 +711,7 @@ public class SistemaInterno {
     }
 
     // Finalizado
-    public static boolean realizaCadastroCliente() {
+    public static boolean realizaCadastroCliente(String cpfCadastro) {
         Scanner leitor = new Scanner(System.in);
 
         escolhaTipoUsuario: while (true) {
@@ -735,8 +742,6 @@ public class SistemaInterno {
 
             System.out.print("Insira seu nome completo: ");
             String nomeCadastro = leitor.nextLine();
-            System.out.print("Insira seu CPF: ");
-            String cpfCadastro = leitor.nextLine();
             System.out.print("Insira sua senha: ");
             String senhaCadastro = leitor.nextLine();
             System.out.print("");
@@ -792,7 +797,7 @@ public class SistemaInterno {
                                 break;
                             case 4:
                                 if (UsuarioRepositorio.isPresidenteCadastrado()) {
-                                    System.out.println("Presidente já cadastrado no sistema!");
+                                    System.out.println("\nPresidente já cadastrado no sistema!");
                                     continue escolhaTipoUsuario;
                                 }
                                 Presidente presidenteCadastro = new Presidente(nomeCadastro, cpfCadastro, senhaCadastro);

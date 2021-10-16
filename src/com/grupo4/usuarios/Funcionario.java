@@ -1,6 +1,5 @@
 package com.grupo4.usuarios;
 
-
 import com.grupo4.enums.Cargo;
 
 public abstract class Funcionario extends Usuario{

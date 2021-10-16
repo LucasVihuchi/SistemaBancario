@@ -10,6 +10,7 @@ import com.grupo4.repositorios.ContaCorrenteRepositorio;
 import com.grupo4.repositorios.ContaPoupancaRepositorio;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.Locale;
 
 public abstract class Conta {
@@ -69,7 +70,12 @@ public abstract class Conta {
         if (tipoExt.equals(TipoConta.CORRENTE)) {
             ContaCorrenteRepositorio.getContaCorrente(cpfDestinatario).saldo += valor;
         } else if (tipoExt.equals(TipoConta.POUPANCA)) {
-            ContaPoupancaRepositorio.getContaPoupanca(cpfDestinatario).saldo += valor;
+            ContaPoupanca contaPoupanca = ContaPoupancaRepositorio.getContaPoupanca(cpfDestinatario);
+            contaPoupanca.saldo += valor;
+            if (contaPoupanca.getAniversarioConta() == 0) {
+                contaPoupanca.setAniversarioConta(LocalDate.now().getDayOfMonth());
+                contaPoupanca.atualizaAniversarioConta();
+            }
         }
         this.saldo -= (valor + TaxasConta.taxaTransferencia);
         registraTransacao(valor, "transferencia", cpfDestinatario);
@@ -114,7 +120,7 @@ public abstract class Conta {
     }
 
     public void exibirSaldo() {
-        System.out.println("Saldo atual na conta: R$ " + String.format("%.2f", this.saldo));
+        System.out.println("\nSaldo atual na conta: R$ " + String.format("%.2f", this.saldo));
     }
 
     public String getCpfTitular() {

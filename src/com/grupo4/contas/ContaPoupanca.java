@@ -8,10 +8,7 @@ import com.grupo4.exceptions.ValorNegativoException;
 import com.grupo4.interfaces.TaxasConta;
 import com.grupo4.repositorios.UsuarioRepositorio;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,7 +33,7 @@ public class ContaPoupanca extends Conta{
         if (valor <= 0) {
             throw new ValorNegativoException("Simulação de valores negativos não é permitido");
         }
-        if (qtdDias <= 30) {
+        if (qtdDias < 30) {
             throw new ValorInvalidoException("Simulação para menos de 30 dias não é possível.");
         }
         int qtdMeses = qtdDias / 30;
@@ -48,7 +45,7 @@ public class ContaPoupanca extends Conta{
         DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         DateTimeFormatter formatoArquivo = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss");
 
-        File pathRelatorioSimulacaoRendimento = new File ("C:\\RepositorioBanco\\Relatorios\\Clientes\\Simulacoes\\");
+        File pathRelatorioSimulacaoRendimento = new File ("C:\\RepositorioBanco\\Relatorios\\Simulacoes\\");
         File relatorioSimulacaoRendimento = new File(pathRelatorioSimulacaoRendimento.getAbsolutePath() + "\\" + this.cpfTitular + " " + formatoArquivo.format(momentoAtual) + ".txt");
 
         if (!pathRelatorioSimulacaoRendimento.exists()) {
@@ -89,10 +86,51 @@ public class ContaPoupanca extends Conta{
         super.deposito(valor);
         if(this.aniversarioConta == 0) {
             this.aniversarioConta = LocalDate.now().getDayOfMonth();
+            this.atualizaAniversarioConta();
         }
+    }
+
+    public void setAniversarioConta(int aniversarioConta) {
+        this.aniversarioConta = aniversarioConta;
     }
 
     public int getAniversarioConta() {
         return this.aniversarioConta;
+    }
+
+    protected void atualizaAniversarioConta() throws IOException {
+        File pathContaBD = new File("C:\\RepositorioBanco\\");
+        File contaBD = new File(pathContaBD.getAbsolutePath() + "\\contaPoupancaRepositorio.txt");
+
+        if (!pathContaBD.exists()) {
+            pathContaBD.mkdirs();
+        }
+
+        if (!contaBD.exists()) {
+            contaBD.createNewFile();
+        }
+
+        StringBuilder conteudoBD = new StringBuilder();
+
+        try (FileReader contaBDReader = new FileReader(contaBD);
+             BufferedReader contaBDReaderBuff = new BufferedReader(contaBDReader)) {
+            String linha;
+            while ((linha = contaBDReaderBuff.readLine()) != null) {
+                String[] separada = linha.split("¨¨");
+                if (separada[0].equals(this.cpfTitular)) {
+                    linha = linha.replace(separada[3], String.format("%d", this.aniversarioConta));
+                }
+                conteudoBD.append(linha + "\n");
+            }
+        } catch (IOException e) {
+            System.out.println("Erro de leitura de arquivos!");
+        }
+
+        try (FileWriter contaDBWriter = new FileWriter(contaBD);
+             BufferedWriter contaDBWriterBuff = new BufferedWriter(contaDBWriter)) {
+            contaDBWriterBuff.append(conteudoBD);
+        } catch (IOException e) {
+            System.out.println("Erro de escrita de arquivos!");
+        }
     }
 }
