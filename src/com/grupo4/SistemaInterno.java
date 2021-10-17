@@ -10,6 +10,7 @@ import com.grupo4.repositorios.ContaPoupancaRepositorio;
 import com.grupo4.repositorios.SeguroVidaRepositorio;
 import com.grupo4.repositorios.UsuarioRepositorio;
 import com.grupo4.usuarios.*;
+import com.grupo4.validadores.ValidadorEntrada;
 
 import java.io.IOException;
 import java.util.*;
@@ -22,11 +23,12 @@ public class SistemaInterno {
         while (true) {
             Scanner leitor = new Scanner(System.in);
             System.out.println("Bem vindo(a), Usuário(a)");
-            System.out.print("Escolha uma das opções abaixo:" +
-                    "\n1 - Login" +
-                    "\n2 - Cadastro de contas" +
-                    "\n0 - Sair" +
-                    "\nOpção: ");
+            System.out.print("""
+                    Escolha uma das opções abaixo:
+                    1 - Login
+                    2 - Cadastro de contas
+                    0 - Sair
+                    Opção:\s""");
 
             int opcao;
             try {
@@ -62,7 +64,6 @@ public class SistemaInterno {
 
     }
 
-    // Finalizado
     public static void repositoriosLoader() {
         try {
             UsuarioRepositorio.usuarioLoader();
@@ -78,11 +79,44 @@ public class SistemaInterno {
     public static Usuario realizaLogin() {
         Scanner leitor = new Scanner(System.in);
 
-        System.out.print("Insira seu CPF: ");
-        String cpfLogin = leitor.nextLine();
-        System.out.print("Insira sua senha: ");
-        String senhaLogin = leitor.nextLine();
-        System.out.println();
+        String cpfLogin;
+        int numTentativasCpf = 0;
+        while (true) {
+            System.out.print("Insira seu CPF: ");
+            cpfLogin = leitor.nextLine();
+            try {
+                ValidadorEntrada.validaCpf(cpfLogin);
+            } catch (CpfInvalidoException e) {
+                numTentativasCpf++;
+                System.out.println(e.getMessage());
+                if(numTentativasCpf >= 3) {
+                    System.out.println("Retornando ao menu anterior...\n");
+                    return null;
+                }
+                continue;
+            }
+            break;
+        }
+
+        String senhaLogin;
+        int numTentativasSenha = 0;
+        while (true) {
+            System.out.print("Insira sua senha: ");
+            senhaLogin = leitor.nextLine();
+            try {
+                ValidadorEntrada.validaSenha(senhaLogin);
+            } catch (SenhaInvalidaException e) {
+                numTentativasSenha++;
+                System.out.println(e.getMessage());
+                if(numTentativasSenha >= 3) {
+                    System.out.println("Retornando ao menu anterior...\n");
+                    return null;
+                }
+                continue;
+            }
+            break;
+        }
+
         Usuario usuarioLogin;
         try {
             usuarioLogin = UsuarioRepositorio.getUsuario(cpfLogin);
@@ -103,11 +137,13 @@ public class SistemaInterno {
         Scanner leitor = new Scanner(System.in);
 
         while (true) {
-            System.out.print("\nEscolha qual tipo de conta você deseja: " +
-                    "\n1 - Conta corrente" +
-                    "\n2 - Conta poupança" +
-                    "\n0 - Sair" +
-                    "\nOpção: ");
+            System.out.print("""
+
+                    Escolha qual tipo de conta você deseja:\s
+                    1 - Conta corrente
+                    2 - Conta poupança
+                    0 - Sair
+                    Opção:\s""");
 
             int opcaoConta;
             try {
@@ -134,13 +170,15 @@ public class SistemaInterno {
                     continue;
                 }
                 while (true) {
-                    System.out.println("\nEscolha uma das opções abaixo:" +
-                            "\n1 - Saque" +
-                            "\n2 - Depósito" +
-                            "\n3 - Transferência" +
-                            "\n4 - Exibir Saldo" +
-                            "\n5 - Gerar relatório de tributação" +
-                            "\n6 - Contratar seguro de vida");
+                    System.out.println("""
+
+                            Escolha uma das opções abaixo:
+                            1 - Saque
+                            2 - Depósito
+                            3 - Transferência
+                            4 - Exibir Saldo
+                            5 - Gerar relatório de tributação
+                            6 - Contratar seguro de vida""");
 
                     if (usuarioExt instanceof Gerente || usuarioExt instanceof Diretor || usuarioExt instanceof Presidente) {
                         System.out.println("7 - Gerar relatório de numero de contas na(s) agência(s)");
@@ -151,8 +189,7 @@ public class SistemaInterno {
                     if (usuarioExt instanceof Presidente) {
                         System.out.println("9 - Gerar relatório do capital total armazenado no banco");
                     }
-                    System.out.print("0 - Sair" +
-                            "\nOpção: ");
+                    System.out.print("0 - Sair" +  "\nOpção: ");
 
                     int opcaoOperacao;
                     try {
@@ -203,8 +240,9 @@ public class SistemaInterno {
                     switch (opcaoOperacao) {
                         case 1 -> {
                             System.out.print("Insira o valor a ser retirado: ");
-                            double valorSaque = leitor.nextDouble();
+                            double valorSaque = 0;
                             try {
+                                valorSaque = leitor.nextDouble();
                                 contaCorrenteLogada.saque(valorSaque);
                             } catch (ValorNegativoException | SaldoInsuficienteException e) {
                                 System.out.println(e.getMessage());
@@ -213,13 +251,19 @@ public class SistemaInterno {
                                 System.out.println("Erro de escrita de arquivos");
                                 leitor.close();
                                 System.exit(1);
+                            } catch (InputMismatchException e) {
+                                System.out.println("Erro! Insira apenas números!\n");
+                                continue;
+                            } finally {
+                                leitor.nextLine();
                             }
                             System.out.println("\nO valor de R$ " + String.format("%.2f", valorSaque) + " foi sacado com sucesso!");
                         }
                         case 2 -> {
                             System.out.print("Insira o valor a ser depositado: ");
-                            double valorDeposito = leitor.nextDouble();
+                            double valorDeposito = 0;
                             try {
+                                valorDeposito = leitor.nextDouble();
                                 contaCorrenteLogada.deposito(valorDeposito);
                             } catch (ValorNegativoException e) {
                                 System.out.println(e.getMessage());
@@ -228,21 +272,52 @@ public class SistemaInterno {
                                 System.out.println("Erro de escrita de arquivos");
                                 leitor.close();
                                 System.exit(1);
+                            } catch (InputMismatchException e) {
+                                System.out.println("Erro! Insira apenas números!\n");
+                                continue;
+                            } finally {
+                                leitor.nextLine();
                             }
                             System.out.println("\nO valor de R$ " + String.format("%.2f", valorDeposito) + " foi depositado com sucesso!");
                         }
                         case 3 -> {
                             System.out.print("Insira o valor a ser transferido: ");
-                            double valorTransferencia = leitor.nextDouble();
+                            double valorTransferencia = 0;
+                            try {
+                                valorTransferencia = leitor.nextDouble();
+                            } catch (InputMismatchException e) {
+                                System.out.println("\nErro! Insira apenas números!");
+                                continue;
+                            } finally {
+                                leitor.nextLine();
+                            }
                             System.out.print("Insira o cpf do destinatário: ");
-                            leitor.nextLine();
                             String cpfDestinatario = leitor.nextLine();
-                            System.out.print("Escolha o tipo de conta:" +
-                                    "\n1 - Conta Corrente" +
-                                    "\n2 - Conta Poupança" +
-                                    "\nOpção: ");
+                            try {
+                                ValidadorEntrada.validaCpf(cpfDestinatario);
+                            } catch (CpfInvalidoException e) {
+                                System.out.println("\n" + e.getMessage());
+                                continue;
+                            }
+                            System.out.print("""
+                                    Escolha o tipo de conta:
+                                    1 - Conta Corrente
+                                    2 - Conta Poupança
+                                    Opção:\s""");
 
-                            int idTipoConta = leitor.nextInt();
+                            int idTipoConta = 0;
+                            try {
+                                idTipoConta = leitor.nextInt();
+                                ValidadorEntrada.validaTipoConta(idTipoConta);;
+                            } catch (TipoContaInvalidoException e) {
+                                System.out.println("\n" + e.getMessage());
+                                continue;
+                            } catch (InputMismatchException e) {
+                                System.out.println("\nErro! Insira apenas números!");
+                                continue;
+                            } finally {
+                                leitor.nextLine();
+                            }
                             TipoConta tipoContaTransferencia = TipoConta.getTipoContaPorIndice(idTipoConta);
                             try {
                                 contaCorrenteLogada.transferencia(valorTransferencia, cpfDestinatario, tipoContaTransferencia);
@@ -269,15 +344,32 @@ public class SistemaInterno {
                         }
                         case 6 -> {
                             System.out.print("Insira o valor a ser segurado: ");
-                            double valorTotalSegurado = leitor.nextDouble();
+                            double valorTotalSegurado = 0;
+                            try {
+                                valorTotalSegurado = leitor.nextDouble();
+                            } catch (InputMismatchException e) {
+                                System.out.println("\nErro! Insira apenas números!");
+                                continue;
+                            } finally {
+                                leitor.nextLine();
+                            }
                             System.out.print("Insira em quantos meses deseja pagar o seguro: ");
-                            int qtdMeses = leitor.nextInt();
+                            int qtdMeses;
+                            try {
+                                qtdMeses = leitor.nextInt();
+                            } catch (InputMismatchException e) {
+                                System.out.println("\nErro! Insira apenas números!");
+                                continue;
+                            } finally {
+                                leitor.nextLine();
+                            }
                             List<String> segurados = new ArrayList<>();
                             while (true) {
-                                System.out.print("Escolha uma das opções abaixo:" +
-                                        "\n1 - Adicionar novo segurado" +
-                                        "\n0 - Finalizar" +
-                                        "\nOpção: ");
+                                System.out.print("""
+                                        Escolha uma das opções abaixo:
+                                        1 - Adicionar novo segurado
+                                        0 - Finalizar
+                                        Opção:\s""");
                                 int opcaoSegurados;
                                 try {
                                     opcaoSegurados = leitor.nextInt();
@@ -291,6 +383,12 @@ public class SistemaInterno {
                                 if (opcaoSegurados == 1) {
                                     System.out.print("Insira o CPF do segurado: ");
                                     String segurado = leitor.nextLine();
+                                    try {
+                                        ValidadorEntrada.validaCpf(segurado);
+                                    } catch (CpfInvalidoException e) {
+                                        System.out.println("\n" + e.getMessage());
+                                        continue;
+                                    }
                                     segurados.add(segurado);
                                 } else if (opcaoSegurados == 0) {
                                     break;
@@ -323,10 +421,11 @@ public class SistemaInterno {
                             } else if (usuarioExt instanceof Diretor || usuarioExt instanceof Presidente) {
                                 Set<Agencia> agencias = new HashSet<>();
                                 while (true) {
-                                    System.out.print("Escolha uma das opções abaixo: " +
-                                            "\n1 - Selecionar nova agencia" +
-                                            "\n0 - Finalizar" +
-                                            "\nOpção: ");
+                                    System.out.print("""
+                                            Escolha uma das opções abaixo:\s
+                                            1 - Selecionar nova agencia
+                                            0 - Finalizar
+                                            Opção:\s""");
                                     int opcaoAgencias;
                                     try {
                                         opcaoAgencias = leitor.nextInt();
@@ -339,7 +438,19 @@ public class SistemaInterno {
 
                                     if (opcaoAgencias == 1) {
                                         System.out.print("Insira o número da agência: ");
-                                        int idAgencia = leitor.nextInt();
+                                        int idAgencia;
+                                        idAgencia = leitor.nextInt();
+                                        try {
+                                            ValidadorEntrada.validaIdAgencia(idAgencia);
+                                        } catch (IdAgenciaInvalidoException e) {
+                                            System.out.println("\n" + e.getMessage());
+                                            continue;
+                                        } catch (InputMismatchException e) {
+                                            System.out.println("\nErro! Insira apenas números!\n");
+                                            continue;
+                                        } finally {
+                                            leitor.nextLine();
+                                        }
                                         Agencia agencia = Agencia.getAgenciaPorId(idAgencia);
                                         agencias.add(agencia);
                                     } else if (opcaoAgencias == 0) {
@@ -416,12 +527,14 @@ public class SistemaInterno {
                 }
 
                 while (true) {
-                    System.out.println("\nEscolha uma das opções abaixo:" +
-                            "\n1 - Saque" +
-                            "\n2 - Depósito" +
-                            "\n3 - Transferência" +
-                            "\n4 - Exibir Saldo" +
-                            "\n5 - Gerar relatório de simulação de rendimento");
+                    System.out.println("""
+
+                            Escolha uma das opções abaixo:
+                            1 - Saque
+                            2 - Depósito
+                            3 - Transferência
+                            4 - Exibir Saldo
+                            5 - Gerar relatório de simulação de rendimento""");
 
                     if (usuarioExt instanceof Gerente || usuarioExt instanceof Diretor || usuarioExt instanceof Presidente) {
                         System.out.println("6 - Gerar relatório de numero de contas na(s) agência(s)");
@@ -484,8 +597,9 @@ public class SistemaInterno {
                     switch (opcaoOperacao) {
                         case 1 -> {
                             System.out.print("Insira o valor a ser retirado: ");
-                            double valorSaque = leitor.nextDouble();
+                            double valorSaque = 0;
                             try {
+                                valorSaque = leitor.nextDouble();
                                 contaPoupancaLogada.saque(valorSaque);
                             } catch (ValorNegativoException | SaldoInsuficienteException e) {
                                 System.out.println(e.getMessage());
@@ -494,13 +608,19 @@ public class SistemaInterno {
                                 System.out.println("Erro de escrita de arquivos");
                                 leitor.close();
                                 System.exit(1);
+                            } catch (InputMismatchException e) {
+                                System.out.println("Erro! Insira apenas números!\n");
+                                continue;
+                            } finally {
+                                leitor.nextLine();
                             }
                             System.out.println("\nO valor de R$ " + String.format("%.2f", valorSaque) + " foi sacado com sucesso!");
                         }
                         case 2 -> {
                             System.out.print("Insira o valor a ser depositado: ");
-                            double valorDeposito = leitor.nextDouble();
+                            double valorDeposito = 0;
                             try {
+                                valorDeposito = leitor.nextDouble();
                                 contaPoupancaLogada.deposito(valorDeposito);
                             } catch (ValorNegativoException e) {
                                 System.out.println(e.getMessage());
@@ -509,20 +629,52 @@ public class SistemaInterno {
                                 System.out.println("Erro de escrita de arquivos");
                                 leitor.close();
                                 System.exit(1);
+                            } catch (InputMismatchException e) {
+                                System.out.println("Erro! Insira apenas números!\n");
+                                continue;
+                            } finally {
+                                leitor.nextLine();
                             }
                             System.out.println("\nO valor de R$ " + String.format("%.2f", valorDeposito) + " foi depositado com sucesso!");
                         }
                         case 3 -> {
                             System.out.print("Insira o valor a ser transferido: ");
-                            double valorTransferencia = leitor.nextDouble();
-                            leitor.nextLine();
+                            double valorTransferencia = 0;
+                            try {
+                                valorTransferencia = leitor.nextDouble();
+                            } catch (InputMismatchException e) {
+                                System.out.println("\nErro! Insira apenas números!");
+                                continue;
+                            } finally {
+                                leitor.nextLine();
+                            }
                             System.out.print("Insira o cpf do destinatário: ");
                             String cpfDestinatario = leitor.nextLine();
-                            System.out.print("Escolha o tipo de conta:" +
-                                    "\n1 - Conta Corrente" +
-                                    "\n2 - Conta Poupança" +
-                                    "\nOpção: ");
-                            int idTipoConta = leitor.nextInt();
+                            try {
+                                ValidadorEntrada.validaCpf(cpfDestinatario);
+                            } catch (CpfInvalidoException e) {
+                                System.out.println("\n" + e.getMessage());
+                                continue;
+                            }
+                            System.out.print("""
+                                    Escolha o tipo de conta:
+                                    1 - Conta Corrente
+                                    2 - Conta Poupança
+                                    Opção:\s""");
+
+                            int idTipoConta = 0;
+                            try {
+                                idTipoConta = leitor.nextInt();
+                                ValidadorEntrada.validaTipoConta(idTipoConta);;
+                            } catch (TipoContaInvalidoException e) {
+                                System.out.println("\n" + e.getMessage());
+                                continue;
+                            } catch (InputMismatchException e) {
+                                System.out.println("\nErro! Insira apenas números!");
+                                continue;
+                            } finally {
+                                leitor.nextLine();
+                            }
                             TipoConta tipoContaTransferencia = TipoConta.getTipoContaPorIndice(idTipoConta);
                             try {
                                 contaPoupancaLogada.transferencia(valorTransferencia, cpfDestinatario, tipoContaTransferencia);
@@ -539,9 +691,25 @@ public class SistemaInterno {
                         case 4 -> contaPoupancaLogada.exibirSaldo();
                         case 5 -> {
                             System.out.print("Insira o valor a ser simulado: ");
-                            int valorSimulacao = leitor.nextInt();
+                            double valorSimulacao = 0;
+                            try {
+                                valorSimulacao = leitor.nextDouble();
+                            } catch (InputMismatchException e) {
+                                System.out.println("\nErro! Insira apenas números!");
+                                continue;
+                            } finally {
+                                leitor.nextLine();
+                            }
                             System.out.print("Insira a quantidade de dias para serem simulados: ");
-                            int qtdDiasSimulacao = leitor.nextInt();
+                            int qtdDiasSimulacao = 0;
+                            try {
+                                qtdDiasSimulacao = leitor.nextInt();
+                            } catch (InputMismatchException e) {
+                                System.out.println("\nErro! Insira apenas números!");
+                                continue;
+                            } finally {
+                                leitor.nextLine();
+                            }
                             try {
                                 contaPoupancaLogada.geraSimulacaoRendimento(valorSimulacao, qtdDiasSimulacao);
                             } catch (ValorNegativoException | ValorInvalidoException e) {
@@ -566,21 +734,36 @@ public class SistemaInterno {
                             } else if (usuarioExt instanceof Diretor || usuarioExt instanceof Presidente) {
                                 Set<Agencia> agencias = new HashSet<>();
                                 while (true) {
-                                    System.out.print("Escolha uma das opções abaixo: " +
-                                            "\n1 - Selecionar nova agencia" +
-                                            "\n0 - Finalizar" +
-                                            "\nOpção: ");
+                                    System.out.print("""
+                                            Escolha uma das opções abaixo:\s
+                                            1 - Selecionar nova agencia
+                                            0 - Finalizar
+                                            Opção:\s""");
                                     int opcaoAgencias;
                                     try {
                                         opcaoAgencias = leitor.nextInt();
                                     } catch (InputMismatchException e) {
                                         System.out.println("\nValor inserido inválido. Retornando ao menu anterior...\n");
                                         continue;
+                                    } finally {
+                                        leitor.nextLine();
                                     }
 
                                     if (opcaoAgencias == 1) {
                                         System.out.print("Insira o número da agência: ");
-                                        int idAgencia = leitor.nextInt();
+                                        int idAgencia;
+                                        idAgencia = leitor.nextInt();
+                                        try {
+                                            ValidadorEntrada.validaIdAgencia(idAgencia);
+                                        } catch (IdAgenciaInvalidoException e) {
+                                            System.out.println("\n" + e.getMessage());
+                                            continue;
+                                        } catch (InputMismatchException e) {
+                                            System.out.println("\nErro! Insira apenas números!\n");
+                                            continue;
+                                        } finally {
+                                            leitor.nextLine();
+                                        }
                                         Agencia agencia = Agencia.getAgenciaPorId(idAgencia);
                                         agencias.add(agencia);
                                     } else if (opcaoAgencias == 0) {
@@ -651,12 +834,14 @@ public class SistemaInterno {
     public static void realizaCadastroConta() {
         Scanner leitor = new Scanner(System.in);
 
-        while(true) {
-            System.out.print("\nEscolha o tipo de conta que deseja cadastrar:" +
-                    "\n1 - Conta corrente" +
-                    "\n2 - Conta poupança" +
-                    "\n0 - Voltar ao menu anterior" +
-                    "\nOpção: ");
+        escolhaTipoConta: while(true) {
+            System.out.print("""
+
+                    Escolha o tipo de conta que deseja cadastrar:
+                    1 - Conta corrente
+                    2 - Conta poupança
+                    0 - Voltar ao menu anterior
+                    Opção:\s""");
 
             int opcaoCadastro;
             try {
@@ -664,27 +849,88 @@ public class SistemaInterno {
             } catch (InputMismatchException e) {
                 System.out.println("\nValor inserido inválido. Retornando ao início do cadastro...\n");
                 continue;
+            } finally {
+                leitor.nextLine();
             }
 
             if (opcaoCadastro < 0 || opcaoCadastro > 2) {
                 System.out.println("\nValor inserido inválido. Retornando ao início do cadastro...\n");
                 continue;
             } else if (opcaoCadastro == 0){
+                System.out.println();
                 return;
             }
-            leitor.nextLine();
-            System.out.print("Insira seu CPF: ");
-            String cpfCadastro = leitor.nextLine();
-            System.out.print("Insira o número da agência: ");
-            int idAgenciaCadastro = leitor.nextInt();
+
+            String cpfCadastro;
+            int numTentativasCpf = 0;
+            while (true) {
+                System.out.print("Insira seu CPF: ");
+                cpfCadastro = leitor.nextLine();
+                try {
+                    ValidadorEntrada.validaCpf(cpfCadastro);
+                } catch (CpfInvalidoException e) {
+                    numTentativasCpf++;
+                    System.out.println(e.getMessage());
+                    if(numTentativasCpf >= 3) {
+                        System.out.println("Retornando ao menu anterior...\n");
+                        continue escolhaTipoConta;
+                    }
+                    continue;
+                }
+                break;
+            }
+            int idAgenciaCadastro;
+            int numTentativasIdAgencia = 0;
+            while (true) {
+                System.out.print("Insira o número da agência: ");
+                try {
+                    idAgenciaCadastro = leitor.nextInt();
+                    ValidadorEntrada.validaIdAgencia(idAgenciaCadastro);
+                } catch (IdAgenciaInvalidoException e) {
+                    numTentativasIdAgencia++;
+                    System.out.println(e.getMessage());
+                    if(numTentativasIdAgencia >= 3) {
+                        System.out.println("Retornando ao menu anterior...\n");
+                        continue escolhaTipoConta;
+                    }
+                    continue;
+                } catch (InputMismatchException e) {
+                    numTentativasIdAgencia++;
+                    System.out.println("Erro. Insira apenas números!\n");
+                    if(numTentativasIdAgencia >= 3) {
+                        System.out.println("Retornando ao menu anterior...\n");
+                        continue escolhaTipoConta;
+                    }
+                    continue;
+                } finally {
+                    leitor.nextLine();
+                }
+                break;
+            }
             Agencia agenciaCadastro = Agencia.getAgenciaPorId(idAgenciaCadastro);
+
             String senhaCadastro;
             try {
                 UsuarioRepositorio.getUsuario(cpfCadastro);
-                leitor.nextLine();
-                System.out.print("Usuário encontrado no sistema!\nInsira sua senha: ");
-                senhaCadastro = leitor.nextLine();
-                System.out.println();
+                System.out.println("Usuário encontrado no sistema!");
+
+                int numTentativasSenha = 0;
+                while (true) {
+                    System.out.print("Insira sua senha: ");
+                    senhaCadastro = leitor.nextLine();
+                    try {
+                        ValidadorEntrada.validaSenha(senhaCadastro);
+                    } catch (SenhaInvalidaException e) {
+                        numTentativasSenha++;
+                        System.out.println(e.getMessage());
+                        if(numTentativasSenha >= 3) {
+                            System.out.println("Retornando ao menu anterior...\n");
+                            continue escolhaTipoConta;
+                        }
+                        continue;
+                    }
+                    break;
+                }
                 UsuarioRepositorio.getUsuario(cpfCadastro).logar(senhaCadastro);
             } catch (CpfInexistenteException e) {
                 if(!realizaCadastroCliente(cpfCadastro)) {
@@ -728,18 +974,19 @@ public class SistemaInterno {
         }
     }
 
-    // Finalizado
     public static boolean realizaCadastroCliente(String cpfCadastro) {
         Scanner leitor = new Scanner(System.in);
 
         escolhaTipoUsuario: while (true) {
-            System.out.print("\nEscolha o tipo de usuário que deseja cadastrar:" +
-                    "\n1 - Cliente" +
-                    "\n2 - Gerente" +
-                    "\n3 - Diretor" +
-                    "\n4 - Presidente" +
-                    "\n0 - Voltar ao menu anterior" +
-                    "\nOpção: ");
+            System.out.print("""
+
+                    Escolha o tipo de usuário que deseja cadastrar:
+                    1 - Cliente
+                    2 - Gerente
+                    3 - Diretor
+                    4 - Presidente
+                    0 - Voltar ao menu anterior
+                    Opção:\s""");
 
             int opcaoCadastro;
             try {
@@ -758,11 +1005,44 @@ public class SistemaInterno {
                 return false;
             }
 
-            System.out.print("Insira seu nome completo: ");
-            String nomeCadastro = leitor.nextLine();
-            System.out.print("Insira sua senha: ");
-            String senhaCadastro = leitor.nextLine();
-            System.out.print("");
+            String nomeCadastro;
+            int numTentativasNome = 0;
+            while (true) {
+                System.out.print("Insira seu nome completo: ");
+                nomeCadastro = leitor.nextLine();
+                try {
+                    ValidadorEntrada.validaNome(nomeCadastro);
+                } catch (NomeInvalidoException e) {
+                    numTentativasNome++;
+                    System.out.println(e.getMessage());
+                    if(numTentativasNome >= 3) {
+                        System.out.println("Retornando ao menu anterior...\n");
+                        continue escolhaTipoUsuario;
+                    }
+                    continue;
+                }
+                break;
+            }
+
+
+            String senhaCadastro;
+            int numTentativasSenha = 0;
+            while (true) {
+                System.out.print("Insira sua senha: ");
+                senhaCadastro = leitor.nextLine();
+                try {
+                    ValidadorEntrada.validaSenha(senhaCadastro);
+                } catch (SenhaInvalidaException e) {
+                    numTentativasSenha++;
+                    System.out.println(e.getMessage());
+                    if(numTentativasSenha >= 3) {
+                        System.out.println("Retornando ao menu anterior...\n");
+                        continue escolhaTipoUsuario;
+                    }
+                    continue;
+                }
+                break;
+            }
 
             if (opcaoCadastro == 1) {
                 Cliente clienteCadastro = new Cliente(nomeCadastro, cpfCadastro, senhaCadastro);
@@ -785,9 +1065,35 @@ public class SistemaInterno {
                     String senhaAdmin = leitor.nextLine();
                     if (senhaAdmin.equals(Funcionario.getSenhaAdmin())) {
                         switch (opcaoCadastro) {
-                            case 2:
-                                System.out.print("Insira o número da agência do gerente: ");
-                                int idAgenciaCadastro = leitor.nextInt();
+                            case 2 -> {
+                                int idAgenciaCadastro;
+                                int numTentativasIdAgencia = 0;
+                                while (true) {
+                                    System.out.print("Insira o número da agência do gerente: ");
+                                    try {
+                                        idAgenciaCadastro = leitor.nextInt();
+                                        ValidadorEntrada.validaIdAgencia(idAgenciaCadastro);
+                                    } catch (IdAgenciaInvalidoException e) {
+                                        numTentativasIdAgencia++;
+                                        System.out.println(e.getMessage());
+                                        if(numTentativasIdAgencia >= 3) {
+                                            System.out.println("Retornando ao menu anterior...\n");
+                                            continue escolhaTipoUsuario;
+                                        }
+                                        continue;
+                                    } catch (InputMismatchException e) {
+                                        numTentativasIdAgencia++;
+                                        System.out.println("Erro. Insira apenas números!\n");
+                                        if(numTentativasIdAgencia >= 3) {
+                                            System.out.println("Retornando ao menu anterior...\n");
+                                            continue escolhaTipoUsuario;
+                                        }
+                                        continue;
+                                    } finally {
+                                        leitor.nextLine();
+                                    }
+                                    break;
+                                }
                                 Agencia agenciaCadastro = Agencia.getAgenciaPorId(idAgenciaCadastro);
                                 Gerente gerenteCadastro = new Gerente(nomeCadastro, cpfCadastro, senhaCadastro, agenciaCadastro);
                                 try {
@@ -801,8 +1107,8 @@ public class SistemaInterno {
                                     System.exit(1);
                                 }
                                 System.out.println("\nGerente cadastrado com sucesso!");
-                                break;
-                            case 3:
+                            }
+                            case 3 -> {
                                 Diretor diretorCadastro = new Diretor(nomeCadastro, cpfCadastro, senhaCadastro);
                                 try {
                                     UsuarioRepositorio.adicionaUsuario(diretorCadastro);
@@ -815,8 +1121,8 @@ public class SistemaInterno {
                                     System.exit(1);
                                 }
                                 System.out.println("\nDiretor cadastrado com sucesso!");
-                                break;
-                            case 4:
+                            }
+                            case 4 -> {
                                 if (UsuarioRepositorio.isPresidenteCadastrado()) {
                                     System.out.println("\nPresidente já cadastrado no sistema!");
                                     continue escolhaTipoUsuario;
@@ -833,7 +1139,7 @@ public class SistemaInterno {
                                     System.exit(1);
                                 }
                                 System.out.println("\nPresidente cadastro com sucesso!");
-                                break;
+                            }
                         }
                     }
                     else {

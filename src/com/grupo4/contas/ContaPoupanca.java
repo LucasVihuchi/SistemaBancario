@@ -119,7 +119,7 @@ public class ContaPoupanca extends Conta{
             while ((linha = contaBDReaderBuff.readLine()) != null) {
                 String[] separada = linha.split("¨¨");
                 if (separada[0].equals(this.cpfTitular)) {
-                    linha = linha.replace(separada[3], String.format("%d", this.aniversarioConta));
+                    linha = separada[0] + "¨¨" + separada[1] + "¨¨" + separada[2] + "¨¨" + this.aniversarioConta;
                 }
                 conteudoBD.append(linha + "\n");
             }

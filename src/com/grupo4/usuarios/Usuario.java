@@ -18,7 +18,7 @@ public abstract class Usuario implements Comparable<Usuario> {
         if(!this.senha.equals(senhaInserida)) {
             throw new SenhaIncorretaException();
         }
-        System.out.println("Usuário logado com sucesso!");
+        System.out.println("\nUsuário logado com sucesso!");
     }
 
     public String getNome() {
