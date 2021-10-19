@@ -19,8 +19,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/** Interface que implementa os métodos comuns aos cargos de diretoria e superiores
+ */
 public interface GeradorRelatorioDiretoria {
 
+    /** Método para gerar relatório do número de contas nas agências selecionados. Note que se nenhuma agência for fornecida, serão computadas todas as agências do banco.
+     *
+     * @param agenciaExt vetor de agências que devem ser incluídas no relatório
+     * @throws IOException se ocorrer um erro de escrita no arquivo do relatório
+     */
     default void geraRelatorioNumContas(Agencia... agenciaExt) throws IOException {
         int qtdContasCorrente;
         int qtdContasPoupanca;
@@ -87,6 +94,10 @@ public interface GeradorRelatorioDiretoria {
         }
     }
 
+    /** Método para gerar relatório com nome, CPF e agência da conta-corrente e conta-poupança se houverem dos clientes do banco em ordem alfabética
+     *
+     * @throws IOException se ocorrer um erro de escrita no arquivo do relatório
+     */
     default void geraRelatorioClientesBanco() throws IOException {
         List<Usuario> listaUsuarios = new ArrayList<>(UsuarioRepositorio.getUsuarios());
         Collections.sort(listaUsuarios);

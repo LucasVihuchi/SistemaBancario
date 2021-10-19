@@ -13,19 +13,42 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/** Classe para objetos do tipo ContaPoupanca, onde serão contidos, atributos e métodos para o mesmo. Essa classe possui a classe Conta como superclasse.
+ */
 public class ContaPoupanca extends Conta{
     private int aniversarioConta;
     private static final TipoConta tipo = TipoConta.POUPANCA;
 
-    public ContaPoupanca(String cpfTitularExt, Agencia idAgenciaExt) {
-        super(cpfTitularExt, idAgenciaExt);
+    /** Construtor para instanciar nova ContaPoupanca durante o fluxo da aplicação.
+     *
+     * @param cpfTitularExt CPF do titular da conta
+     * @param agenciaExt agência à qual a conta está associada
+     */
+    public ContaPoupanca(String cpfTitularExt, Agencia agenciaExt) {
+        super(cpfTitularExt, agenciaExt);
     }
 
-    public ContaPoupanca(String cpfTitularExt, Agencia idAgenciaExt, double saldoExt, int aniversarioContaExt) {
-        super(cpfTitularExt, idAgenciaExt, saldoExt);
+    /** Construtor para instanciar nova ContaPoupanca apenas no carregamento da aplicação.
+     * Note que esse construtor deve ser utilizado apenas pelos Loaders de arquivos.
+     *
+     * @param cpfTitularExt CPF do titular da conta
+     * @param agenciaExt agência à qual a conta está associada
+     * @param saldoExt saldo da conta
+     * @param aniversarioContaExt dia do mês de aniversário da conta
+     */
+    public ContaPoupanca(String cpfTitularExt, Agencia agenciaExt, double saldoExt, int aniversarioContaExt) {
+        super(cpfTitularExt, agenciaExt, saldoExt);
         this.aniversarioConta = aniversarioContaExt;
     }
 
+    /** Método para gerar relatório de simulação de rendimento e salvar o relatório em um arquivo de texto.
+     *
+     * @param valor valor a ser simulado
+     * @param qtdDias quantidade em dias que o dinheiro ficará investido
+     * @throws ValorNegativoException se um valor negativo for fornecido
+     * @throws ValorInvalidoException se quantidade de dias for menor que 30 dias
+     * @throws IOException se ocorrer um erro de escrita no arquivo de relatório
+     */
     public void geraSimulacaoRendimento(double valor, int qtdDias) throws ValorNegativoException, ValorInvalidoException, IOException {
         if (valor <= 0) {
             throw new ValorNegativoException("Simulação de valores negativos não é permitido");
@@ -67,6 +90,10 @@ public class ContaPoupanca extends Conta{
         }
     }
 
+    /** Método para realizar o rendimento mensal da conta. Note que esse método deve ser chamado automaticamente pelo sistema uma vez por dia para cada conta.
+     *
+     * @throws IOException se ocorrer um erro de escrita no arquivo de contas-poupança
+     */
     public void render() throws IOException {
         boolean isDataAniversario = this.aniversarioConta == LocalDate.now().getDayOfMonth();
         boolean isUltimoDiaMes = (LocalDate.now().getDayOfMonth() == LocalDate.now().lengthOfMonth());
@@ -78,6 +105,12 @@ public class ContaPoupanca extends Conta{
         atualizaSaldo(TipoConta.POUPANCA, this.cpfTitular);
     }
 
+    /** Método para depositar saldo na conta e definir aniversário da conta caso necessário.
+     *
+     * @param valor valor a ser depositado
+     * @throws ValorNegativoException se um valor negativo for fornecido
+     * @throws IOException se ocorrer um erro de escrita no arquivo de histórico de transações
+     */
     @Override
     public void deposito(double valor) throws ValorNegativoException, IOException {
         super.deposito(valor);
@@ -87,18 +120,10 @@ public class ContaPoupanca extends Conta{
         }
     }
 
-    public void setAniversarioConta(int aniversarioConta) {
-        this.aniversarioConta = aniversarioConta;
-    }
-
-    public int getAniversarioConta() {
-        return this.aniversarioConta;
-    }
-
-    public static TipoConta getTipo() {
-        return tipo;
-    }
-
+    /** Método para atualizar o aniversário da conta-poupança no arquivo de contas-poupança
+     *
+     * @throws IOException se ocorrer um erro de escrita no arquivo de contas-poupança
+     */
     protected void atualizaAniversarioConta() throws IOException {
         File pathContaBD = new File("C:\\RepositorioBanco\\");
         File contaBD = new File(pathContaBD.getAbsolutePath() + "\\contaPoupancaRepositorio.txt");
@@ -133,5 +158,17 @@ public class ContaPoupanca extends Conta{
         } catch (IOException e) {
             System.out.println("Erro de escrita de arquivos!");
         }
+    }
+
+    public void setAniversarioConta(int aniversarioConta) {
+        this.aniversarioConta = aniversarioConta;
+    }
+
+    public int getAniversarioConta() {
+        return this.aniversarioConta;
+    }
+
+    public static TipoConta getTipo() {
+        return tipo;
     }
 }

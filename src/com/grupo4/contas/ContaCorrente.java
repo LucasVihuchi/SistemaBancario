@@ -16,22 +16,39 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/** Classe para objetos do tipo ContaCorrente, onde serão contidos, atributos e métodos para o mesmo. Essa classe possui a classe Conta como superclasse.
+ */
 public class ContaCorrente extends Conta {
     private static final TipoConta tipo = TipoConta.CORRENTE;
 
-    public ContaCorrente(String cpfTitularExt, Agencia idAgenciaExt) {
-        super(cpfTitularExt, idAgenciaExt);
+    /** Construtor para instanciar nova ContaCorrente durante o fluxo da aplicação.
+     *
+     * @param cpfTitularExt CPF do titular da conta
+     * @param agenciaExt agência à qual a conta está associada
+     */
+    public ContaCorrente(String cpfTitularExt, Agencia agenciaExt) {
+        super(cpfTitularExt, agenciaExt);
     }
 
-    // Construtor usado apenas para carregamento inicial do sistema
-    public ContaCorrente(String cpfTitularExt, Agencia idAgenciaExt, double saldoExt) {
-        super(cpfTitularExt, idAgenciaExt, saldoExt);
+    /** Construtor para instanciar nova ContaCorrente apenas no carregamento da aplicação.
+     * Note que esse construtor deve ser utilizado apenas pelos Loaders de arquivos.
+     *
+     * @param cpfTitularExt CPF do titular da conta
+     * @param agenciaExt agência à qual a conta está associada
+     * @param saldoExt saldo da conta
+     */
+    public ContaCorrente(String cpfTitularExt, Agencia agenciaExt, double saldoExt) {
+        super(cpfTitularExt, agenciaExt, saldoExt);
     }
 
     public static TipoConta getTipo() {
         return tipo;
     }
 
+    /** Método para gerar relatório de tributação da conta e salvar o relatório em um arquivo de texto.
+     *
+     * @throws IOException se ocorrer um erro de escrita no arquivo de relatório
+     */
     public void geraRelatorioTributacao() throws IOException {
         LocalDateTime momentoAtual = LocalDateTime.now();
         DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
@@ -133,6 +150,17 @@ public class ContaCorrente extends Conta {
 
     }
 
+    /** Método para contratar seguro de vida.
+     *
+     * @param valorSeguradoExt valor a ser segurado
+     * @param qtdMesesExt quantidade de meses em que o seguro será pago
+     * @param segurados lista de CPFs dos segurados
+     * @throws SaldoInsuficienteException se não houver saldo suficiente na conta para pagar a taxa inicial de contratação
+     * @throws ValorNegativoException se um valor negativo for fornecido
+     * @throws CpfInexistenteException se a conta-corrente associada ao CPF do destinatário não for encontrada no sistema
+     * @throws SeguroExistenteException se o usuário já possui um seguro de vida contratado
+     * @throws IOException se ocorrer um erro de escrita no arquivo de seguros de vida
+     */
     public void contrataSeguroVida(double valorSeguradoExt, int qtdMesesExt, List<String> segurados) throws SaldoInsuficienteException, ValorNegativoException, CpfInexistenteException, SeguroExistenteException, IOException {
         SeguroVida seguroVidaTemp = new SeguroVida(this.cpfTitular, valorSeguradoExt, qtdMesesExt, segurados);
         SeguroVidaRepositorio.adicionaSeguroVida(seguroVidaTemp);
@@ -141,6 +169,12 @@ public class ContaCorrente extends Conta {
         atualizaSaldo(TipoConta.CORRENTE, this.cpfTitular);
     }
 
+    /** Método para pagar a mensalidade do seguro de vida.
+     *
+     * @throws CpfInexistenteException se a conta-corrente associada ao CPF do destinatário não for encontrada no sistema
+     * @throws SaldoInsuficienteException se não houver saldo suficiente na conta para pagar a mensalidade
+     * @throws IOException se ocorrer um erro de escrita no arquivo de seguros de vida
+     */
     public void pagaMensalidadeSeguroVida() throws CpfInexistenteException, SaldoInsuficienteException, IOException {
         if (this.saldo < SeguroVidaRepositorio.getSeguroVida(this.cpfTitular).calculaMensalidade()) {
             throw new SaldoInsuficienteException();

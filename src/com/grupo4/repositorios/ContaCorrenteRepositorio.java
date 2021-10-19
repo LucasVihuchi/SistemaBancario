@@ -10,9 +10,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/** Classe que possui repositório para objetos do tipo ContaCorrente, onde serão contidos, atributos e métodos para manipulação das contas-corrente.
+ */
 public class ContaCorrenteRepositorio {
     private static HashMap<String, ContaCorrente> listaDeContasCorrente = new HashMap<>();
 
+    /** Método para adicionar uma nova ContaCorrente à lista de contas-corrente no banco tanto em tempo de execução quanto no arquivo de texto de contas-corrente.
+     *
+     * @param contaCorrenteExt objeto do tipo ContaCorrente que será adicionado no sistema
+     * @throws ContaExistenteException se uma ContaCorrente associada ao CPF do usuário já existir
+     * @throws IOException se ocorrer um erro de escrita no arquivo de contas-corrente
+     */
     public static void adicionaContaCorrente(ContaCorrente contaCorrenteExt) throws ContaExistenteException, IOException {
         if(listaDeContasCorrente.containsKey(contaCorrenteExt.getCpfTitular())){
             throw new ContaExistenteException();
@@ -44,6 +52,12 @@ public class ContaCorrenteRepositorio {
         }
     }
 
+    /** Método para remover uma ContaCorrente da lista de contas-corrente no banco. Note que essa função não altera o arquivo de contas-corrente e que não está em uso atualmente.
+     *
+     * @param cpfExt cpf do usuário que possui a ContaCorrente que deve ser deletada
+     * @throws CpfInexistenteException se o cpf informado não existe no sistema
+     * @deprecated
+     */
     public static void removeContaCorrente(String cpfExt) throws CpfInexistenteException {
         if (!listaDeContasCorrente.containsKey(cpfExt)) {
             throw new CpfInexistenteException();
@@ -51,6 +65,12 @@ public class ContaCorrenteRepositorio {
         listaDeContasCorrente.remove(cpfExt);
     }
 
+    /** Método para retornar uma ContaCorrente específica a partir de um cpf informado.
+     *
+     * @param cpfExt cpf do usuário que possui a ContaCorrente que deve ser retornada
+     * @return Um objeto do tipo ContaCorrente que corresponde ao cpf fornecido
+     * @throws CpfInexistenteException se o cpf informado não existe no sistema
+     */
     public static ContaCorrente getContaCorrente(String cpfExt) throws CpfInexistenteException {
         if (!listaDeContasCorrente.containsKey(cpfExt)) {
             throw new CpfInexistenteException();
@@ -58,6 +78,11 @@ public class ContaCorrenteRepositorio {
         return listaDeContasCorrente.get(cpfExt);
     }
 
+    /** Método para retornar um List com todos os objetos ContaCorrente registrados nas agências selecionadas.
+     *
+     * @param agencias vetor de agências que devem ser incluídas no relatório
+     * @return List com todos os objetos ContaCorrente registrados nas agências selecionadas
+     */
     public static List<ContaCorrente> getContasCorrentePorAgencia(Agencia... agencias) {
 
         // Criando a lista que vou retornar pro meu gerente
@@ -76,11 +101,18 @@ public class ContaCorrenteRepositorio {
         return listaFiltrada;
     }
 
+    /** Método para retornar um List com todos os objetos ContaCorrente registrados no banco.
+     *
+     * @return List com todos os objetos ContaCorrente registrados no banco
+     */
     public static List<ContaCorrente> getContasCorrente() {
         return listaDeContasCorrente.values().stream().toList();
     }
 
-    // Pega o arquivo, lê cada linha e transforma em contacorrente pra ser guardado no hashmap
+    /** Método para carregar os objetos ContaCorrente guardados no arquivo de contas-corrente no início da aplicação.
+     *
+     * @throws IOException se ocorrer um erro de leitura no arquivo de contas-corrente
+     */
     public static void ContaCorrenteLoader () throws IOException {
         File pathContaCorrenteBD = new File ("C:\\RepositorioBanco\\");
         File contaCorrenteBD = new File(pathContaCorrenteBD.getAbsolutePath() +  "\\contaCorrenteRepositorio.txt");

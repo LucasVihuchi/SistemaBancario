@@ -13,8 +13,7 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.Locale;
 
-/**
- * A classe conta
+/** Classe abstrata para objetos do tipo Conta, onde serão contidos, atributos e métodos para o mesmo.
  */
 public abstract class Conta {
     protected String cpfTitular;
@@ -22,17 +21,35 @@ public abstract class Conta {
     protected Agencia agencia;
     protected static TipoConta tipo;
 
-    public Conta(String cpfTitularExt, Agencia idAgenciaExt) {
+    /** Construtor para instanciar nova Conta durante o fluxo da aplicação.
+     *
+     * @param cpfTitularExt CPF do titular da conta
+     * @param agenciaExt agência à qual a conta está associada
+     */
+    public Conta(String cpfTitularExt, Agencia agenciaExt) {
         this.cpfTitular = cpfTitularExt;
-        this.agencia = idAgenciaExt;
+        this.agencia = agenciaExt;
     }
 
-    // Construtor usado apenas para carregamento inicial do sistema
-    public Conta(String cpfTitularExt, Agencia idAgenciaExt, double saldoExt) {
-        this(cpfTitularExt, idAgenciaExt);
+    /** Construtor para instanciar nova Conta apenas no carregamento da aplicação.
+     * Note que esse construtor deve ser utilizado apenas pelos Loaders de arquivos.
+     *
+     * @param cpfTitularExt CPF do titular da conta
+     * @param agenciaExt agência à qual a conta está associada
+     * @param saldoExt saldo da conta
+     */
+    public Conta(String cpfTitularExt, Agencia agenciaExt, double saldoExt) {
+        this(cpfTitularExt, agenciaExt);
         this.saldo = saldoExt;
     }
 
+    /** Método para sacar saldo da conta.
+     *
+     * @param valor valor a ser sacado
+     * @throws ValorNegativoException se um valor negativo for fornecido
+     * @throws SaldoInsuficienteException se não houver saldo suficiente na conta
+     * @throws IOException se ocorrer um erro de escrita no arquivo de histórico de transações
+     */
     public void saque(double valor) throws ValorNegativoException, SaldoInsuficienteException, IOException {
         if (valor <= 0) {
             throw new ValorNegativoException("\nSaque de valores negativos não é permitido!");
@@ -49,6 +66,12 @@ public abstract class Conta {
         }
     }
 
+    /** Método para depositar saldo na conta.
+     *
+     * @param valor valor a ser depositado
+     * @throws ValorNegativoException se um valor negativo for fornecido
+     * @throws IOException se ocorrer um erro de escrita no arquivo de histórico de transações
+     */
     public void deposito(double valor) throws ValorNegativoException, IOException {
         if (valor <= TaxasConta.taxaDeposito) {
             throw new ValorNegativoException("\nDepósito de valores negativos não é permitido!");
@@ -62,6 +85,16 @@ public abstract class Conta {
         }
     }
 
+    /** Método para transferir saldo de uma conta para outra conta no próprio banco.
+     *
+     * @param valor valor a ser transferido
+     * @param cpfDestinatario CPF do destinatário da conta
+     * @param tipoExt tipo de conta do destinatário
+     * @throws ValorNegativoException se um valor negativo for fornecido
+     * @throws SaldoInsuficienteException se não houver saldo suficiente na conta
+     * @throws CpfInexistenteException se a conta do tipo informado associada ao CPF do destinatário não for encontrada no sistema
+     * @throws IOException se ocorrer um erro de escrita no arquivo de histórico de transações
+     */
     public void transferencia(double valor, String cpfDestinatario, TipoConta tipoExt) throws ValorNegativoException, SaldoInsuficienteException, CpfInexistenteException, IOException {
         if (valor <= 0) {
             throw new ValorNegativoException("Transferência de valores negativos não é permitido");
@@ -91,6 +124,19 @@ public abstract class Conta {
         atualizaSaldo(tipoExt, cpfDestinatario);
     }
 
+    /** Método para exibir saldo da conta.
+     */
+    public void exibirSaldo() {
+        System.out.println("\nSaldo atual na conta: R$ " + String.format("%.2f", this.saldo));
+    }
+
+    /** Método para registrar uma transação da conta atual no arquivo de histórico de transações.
+     *
+     * @param valor valor a ser transferido
+     * @param tipoTransacao tipo de transação a ser registrada
+     * @param cpfDestinatario CPF do destinatário da conta
+     * @throws IOException se ocorrer um erro de escrita no arquivo de histórico de transações
+     */
     protected void registraTransacao(double valor, String tipoTransacao, String... cpfDestinatario) throws IOException {
         File pathHistoricoTransacoesDB = new File ("C:\\RepositorioBanco\\");
         File historicoTransacoesBD = new File (pathHistoricoTransacoesDB.getAbsolutePath() + "\\historicoTransacoesRepositorio.txt");
@@ -122,26 +168,12 @@ public abstract class Conta {
         }
     }
 
-    public void exibirSaldo() {
-        System.out.println("\nSaldo atual na conta: R$ " + String.format("%.2f", this.saldo));
-    }
-
-    public String getCpfTitular() {
-        return this.cpfTitular;
-    }
-
-    public double getSaldo() {
-        return this.saldo;
-    }
-
-    public Agencia getAgencia() {
-        return this.agencia;
-    }
-
-    public static TipoConta getTipo() {
-        return tipo;
-    }
-
+    /** Método para atualizar saldo de uma conta no arquivo de registro de contas do TipoConta fornecido.
+     *
+     * @param tipoConta tipo de conta do destinatário
+     * @param cpfUsuario CPF do proprietário da conta
+     * @throws IOException se ocorrer um erro de escrita no arquivo de histórico de transações
+     */
     protected void atualizaSaldo(TipoConta tipoConta, String cpfUsuario) throws IOException {
         File pathContaBD = new File("C:\\RepositorioBanco\\");
         File contaBD = null;
@@ -185,5 +217,21 @@ public abstract class Conta {
         } catch (IOException e) {
             System.out.println("Erro de escrita de arquivos!");
         }
+    }
+
+    public String getCpfTitular() {
+        return this.cpfTitular;
+    }
+
+    public double getSaldo() {
+        return this.saldo;
+    }
+
+    public Agencia getAgencia() {
+        return this.agencia;
+    }
+
+    public static TipoConta getTipo() {
+        return tipo;
     }
 }

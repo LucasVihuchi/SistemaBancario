@@ -14,24 +14,37 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/** Classe para objetos do tipo Gerente, onde serão contidos, atributos e métodos para o mesmo. Essa classe possui a classe Funcionario como superclasse.
+ */
 public class Gerente extends Funcionario{
-    private Agencia idAgencia;
+    private Agencia agencia;
     private static final Cargo cargo = Cargo.GERENTE;
 
-    public Gerente(String nomeExt, String cpfExt, String senhaExt, Agencia idAgenciaExt) {
+    /** Construtor para instanciar novo Gerente durante o fluxo da aplicação.
+     *
+     * @param nomeExt nome do gerente
+     * @param cpfExt CPF do gerente
+     * @param senhaExt senha do gerente
+     * @param agenciaExt agência pela qual o gerente é responsável
+     */
+    public Gerente(String nomeExt, String cpfExt, String senhaExt, Agencia agenciaExt) {
         super(nomeExt, cpfExt, senhaExt);
-        this.idAgencia = idAgenciaExt;
+        this.agencia = agenciaExt;
     }
 
+    /** Método para gerar relatório do número de contas na agência do gerente.
+     *
+     * @throws IOException se ocorrer um erro de escrita no arquivo do relatório
+     */
     public void geraRelatorioNumContas() throws IOException {
-        int qtdContasCorrente = ContaCorrenteRepositorio.getContasCorrentePorAgencia(idAgencia).size();
-        int qtdContasPoupanca = ContaPoupancaRepositorio.getContasPoupancaPorAgencia(idAgencia).size();
+        int qtdContasCorrente = ContaCorrenteRepositorio.getContasCorrentePorAgencia(agencia).size();
+        int qtdContasPoupanca = ContaPoupancaRepositorio.getContasPoupancaPorAgencia(agencia).size();
         System.out.println("O numero de contas corrente na agência " +
-                this.idAgencia.getIdAgencia() + " é igual a " + qtdContasCorrente);
+                this.agencia.getIdAgencia() + " é igual a " + qtdContasCorrente);
         System.out.println("O numero de contas poupança na agência " +
-                this.idAgencia.getIdAgencia() + " é igual a " + qtdContasPoupanca);
+                this.agencia.getIdAgencia() + " é igual a " + qtdContasPoupanca);
         System.out.println("O numero de total de contas na agência " +
-                this.idAgencia.getIdAgencia() + " é igual a " + (qtdContasPoupanca+qtdContasCorrente));
+                this.agencia.getIdAgencia() + " é igual a " + (qtdContasPoupanca+qtdContasCorrente));
 
         LocalDateTime momentoAtual = LocalDateTime.now();
         DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
@@ -58,21 +71,21 @@ public class Gerente extends Funcionario{
             relatorioNumContasWriterBuff.newLine();
             relatorioNumContasWriterBuff.newLine();
             relatorioNumContasWriterBuff.append("O numero de contas corrente na agência " +
-                    this.idAgencia.getIdAgencia() + " é igual a " + qtdContasCorrente);
+                    this.agencia.getIdAgencia() + " é igual a " + qtdContasCorrente);
             relatorioNumContasWriterBuff.newLine();
             relatorioNumContasWriterBuff.append("O numero de contas poupança na agência " +
-                    this.idAgencia.getIdAgencia() + " é igual a " + qtdContasPoupanca);
+                    this.agencia.getIdAgencia() + " é igual a " + qtdContasPoupanca);
             relatorioNumContasWriterBuff.newLine();
             relatorioNumContasWriterBuff.append("O numero de total de contas na agência " +
-                    this.idAgencia.getIdAgencia() + " é igual a " + (qtdContasPoupanca+qtdContasCorrente));
+                    this.agencia.getIdAgencia() + " é igual a " + (qtdContasPoupanca+qtdContasCorrente));
 
         } catch (IOException | CpfInexistenteException e) {
             System.out.println("Erro de escrita de arquivos");
         }
     }
 
-    public Agencia getIdAgencia() {
-        return this.idAgencia;
+    public Agencia getAgencia() {
+        return this.agencia;
     }
 
     public static Cargo getCargo() {

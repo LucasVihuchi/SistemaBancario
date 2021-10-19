@@ -15,8 +15,14 @@ import com.grupo4.validadores.ValidadorEntrada;
 import java.io.IOException;
 import java.util.*;
 
+/** Classe que contém o menu principal da aplicação e classe main do sistema.
+ */
 public class SistemaInterno {
 
+    /** Método main que contém o início do menu principal, bem como as chamadas para processos de login e cadastro de usuários.
+     *
+     * @param args argumentos recebidos no início da aplicação
+     */
     public static void main(String[] args) {
         repositoriosLoader();
 
@@ -64,6 +70,8 @@ public class SistemaInterno {
 
     }
 
+    /** Método para chamar os métodos Loader dos repositórios que fazem o carregamento dos dados dos arquivos de texto.
+     */
     public static void repositoriosLoader() {
         try {
             UsuarioRepositorio.usuarioLoader();
@@ -76,6 +84,10 @@ public class SistemaInterno {
         }
     }
 
+    /** Método para realizar o processo de autenticação de um usuário.
+     *
+     * @return O Usuário logado ou nulo se ocorrer um erro na autenticação
+     */
     public static Usuario realizaLogin() {
         Scanner leitor = new Scanner(System.in);
 
@@ -133,6 +145,10 @@ public class SistemaInterno {
         return usuarioLogin;
     }
 
+    /** Método para realizar operações em uma conta-corrente ou conta-poupança
+     *
+     * @param usuarioExt usuário autenticado
+     */
     public static void caixaEletronico(Usuario usuarioExt) {
         Scanner leitor = new Scanner(System.in);
 
@@ -831,6 +847,8 @@ public class SistemaInterno {
 
     }
 
+    /** Método para realizar o cadastro de uma nova conta-corrente ou conta-poupança no sistema
+     */
     public static void realizaCadastroConta() {
         Scanner leitor = new Scanner(System.in);
 
@@ -974,6 +992,11 @@ public class SistemaInterno {
         }
     }
 
+    /** Método para realizar o cadastro de um novo cliente no sistema.
+     *
+     * @param cpfCadastro CPF do usuário a ser cadastrado
+     * @return true se o processo for completado com sucesso ou false caso ocorra um erro no processo de cadastro
+     */
     public static boolean realizaCadastroCliente(String cpfCadastro) {
         Scanner leitor = new Scanner(System.in);
 

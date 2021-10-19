@@ -1,5 +1,7 @@
 package com.grupo4.interfaces;
 
+/** Interface para guardar valores de taxas relevantes para o banco
+ */
 public interface TaxasConta {
     double taxaSaque = 0.10;
     double taxaDeposito = 0.10;

@@ -17,17 +17,25 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/** Classe para objetos do tipo Presidente, onde serão contidos, atributos e métodos para o mesmo. Essa classe possui a classe Funcionario como superclasse.
+ */
 public class Presidente extends Funcionario implements GeradorRelatorioDiretoria{
     private static final Cargo cargo = Cargo.PRESIDENTE;
 
+    /** Construtor para instanciar novo Gerente durante o fluxo da aplicação.
+     *
+     * @param nomeExt nome do presidente
+     * @param cpfExt CPF do presidente
+     * @param senhaExt senha do presidente
+     */
     public Presidente(String nomeExt, String cpfExt, String senhaExt) {
         super(nomeExt, cpfExt, senhaExt);
     }
 
-    public static Cargo getCargo() {
-        return cargo;
-    }
-
+    /** Método para gerar o relatório com o capital total armazenado no banco.
+     *
+     * @throws IOException se ocorrer um erro de escrita no arquivo do relatório
+     */
     public void geraRelatorioCapitalBanco() throws IOException {
         List<ContaCorrente> listaContasCorrente = ContaCorrenteRepositorio.getContasCorrente();
         List<ContaPoupanca> listaContasPoupanca = ContaPoupancaRepositorio.getContasPoupanca();
@@ -73,5 +81,9 @@ public class Presidente extends Funcionario implements GeradorRelatorioDiretoria
         } catch (IOException e) {
             System.out.println("Erro de leitura de arquivos");
         }
+    }
+
+    public static Cargo getCargo() {
+        return cargo;
     }
 }

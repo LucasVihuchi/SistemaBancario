@@ -9,9 +9,17 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 
+/** Classe que possui repositório para objetos do tipo Usuario, onde serão contidos, atributos e métodos para manipulação dos usuários.
+ */
 public class UsuarioRepositorio {
     private static HashMap<String, Usuario> listaUsuarios = new HashMap<>();
 
+    /** Método para adicionar um novo Usuario à lista de usuários no banco tanto em tempo de execução quanto no arquivo de texto de usuários.
+     *
+     * @param usuarioExt objeto do tipo Usuario que será adicionado no sistema
+     * @throws UsuarioExistenteException se um Usuario já existir
+     * @throws IOException se ocorrer um erro de escrita no arquivo de usuários
+     */
     public static void adicionaUsuario(Usuario usuarioExt) throws UsuarioExistenteException, IOException {
         if (listaUsuarios.containsKey(usuarioExt.getCpf())) {
             throw new UsuarioExistenteException();
@@ -37,7 +45,7 @@ public class UsuarioRepositorio {
                 usuarioDBWriterBuff.append("c");
             }
             else if (usuarioExt instanceof Gerente) {
-                usuarioDBWriterBuff.append("g¨¨" + ((Gerente) usuarioExt).getIdAgencia().getIdAgencia());
+                usuarioDBWriterBuff.append("g¨¨" + ((Gerente) usuarioExt).getAgencia().getIdAgencia());
             }
             else if (usuarioExt instanceof Diretor) {
                 usuarioDBWriterBuff.append("d");
@@ -52,6 +60,12 @@ public class UsuarioRepositorio {
         }
     }
 
+    /** Método para remover um Usuario da lista de usuário no banco. Note que essa função não altera o arquivo de usuários e que não está em uso atualmente.
+     *
+     * @param cpfExt cpf do Usuario que deve ser deletado
+     * @throws CpfInexistenteException se o cpf informado não existe no sistema
+     * @deprecated
+     */
     public static void removeUsuario(String cpfExt) throws CpfInexistenteException {
         // ! - not
         if (!listaUsuarios.containsKey(cpfExt)) {
@@ -61,10 +75,10 @@ public class UsuarioRepositorio {
         // TODO Implementar remoção de cadastro do arquivo de texto
     }
 
-    public static boolean isUsuarioCadastrado(String cpfExt) {
-        return listaUsuarios.containsKey(cpfExt);
-    }
-
+    /** Método para verificar se o presidente já está cadastrado no sistema.
+     *
+     * @return true se encontrar um presidente cadastrado e false caso não encontre
+     */
     public static boolean isPresidenteCadastrado() {
         for (Usuario usuario : listaUsuarios.values()) {
             if (usuario instanceof Presidente) {
@@ -74,6 +88,12 @@ public class UsuarioRepositorio {
         return false;
     }
 
+    /** Método para retornar um Usuario específico a partir de um cpf informado.
+     *
+     * @param cpfExt cpf do Usuario que deve ser retornado
+     * @return Um objeto do tipo Usuario que corresponde ao cpf fornecido
+     * @throws CpfInexistenteException se o cpf informado não existe no sistema
+     */
     public static Usuario getUsuario(String cpfExt) throws CpfInexistenteException {
         if (!listaUsuarios.containsKey(cpfExt)) {
             throw new CpfInexistenteException();
@@ -81,10 +101,18 @@ public class UsuarioRepositorio {
         return listaUsuarios.get(cpfExt);
     }
 
+    /** Método para retornar um List com todos os objetos Usuario registrados no banco.
+     *
+     * @return List com todos os objetos Usuario registrados no banco
+     */
     public static List<Usuario> getUsuarios() {
         return listaUsuarios.values().stream().toList();
     }
 
+    /** Método para carregar os objetos Usuario guardados no arquivo de usuários no início da aplicação.
+     *
+     * @throws IOException se ocorrer um erro de leitura no arquivo de usuários
+     */
     public static void usuarioLoader () throws IOException {
         File pathUsuarioBD = new File ("C:\\RepositorioBanco\\");
         File usuarioBD = new File(pathUsuarioBD.getAbsolutePath() + "\\usuarioRepositorio.txt");
