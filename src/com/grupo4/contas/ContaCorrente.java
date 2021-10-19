@@ -182,5 +182,46 @@ public class ContaCorrente extends Conta {
         this.saldo -= SeguroVidaRepositorio.getSeguroVida(this.cpfTitular).calculaMensalidade();
         registraTransacao((SeguroVidaRepositorio.getSeguroVida(this.cpfTitular).calculaMensalidade()), "pagamentoSeguro");
         atualizaSaldo(TipoConta.CORRENTE, this.cpfTitular);
+        atualizaValorPagoSeguroVida();
+    }
+
+    /** Método para atualizar o valor já pago no arquivo de registro de seguros de vida.
+     *
+     * @throws IOException se ocorrer um erro de escrita no arquivo de seguros de vida
+     */
+    protected void atualizaValorPagoSeguroVida() throws IOException {
+        File pathSeguroVidaBD = new File ("C:\\RepositorioBanco\\");
+        File seguroVidaBD = new File(pathSeguroVidaBD.getAbsolutePath() + "\\seguroVidaRepositorio.txt");
+
+        if(!pathSeguroVidaBD.exists()) {
+            pathSeguroVidaBD.mkdirs();
+        }
+
+        if(!seguroVidaBD.exists()) {
+            seguroVidaBD.createNewFile();
+        }
+
+        StringBuilder conteudoBD = new StringBuilder();
+
+        try (FileReader seguroVidaBDReader = new FileReader(seguroVidaBD);
+             BufferedReader seguroVidaBDReaderBuff = new BufferedReader(seguroVidaBDReader)) {
+            String linha;
+            while ((linha = seguroVidaBDReaderBuff.readLine()) != null) {
+                String[] separada = linha.split("¨¨");
+                if (separada[0].equals(this.cpfTitular)) {
+                    linha = separada[0] + "¨¨" + separada[1] + "¨¨" + separada[2] + "¨¨" + String.format("%.2f", SeguroVidaRepositorio.getSeguroVida(this.cpfTitular).getValorPago()) + "¨¨" + separada[4] + "¨¨" + separada[5];
+                }
+                conteudoBD.append(linha + "\n");
+            }
+        } catch (IOException | CpfInexistenteException e) {
+            System.out.println("Erro de leitura de arquivos!");
+        }
+
+        try (FileWriter seguroVidaDBWriter = new FileWriter(seguroVidaBD);
+             BufferedWriter seguroVidaDBWriterBuff = new BufferedWriter(seguroVidaDBWriter)) {
+            seguroVidaDBWriterBuff.append(conteudoBD);
+        } catch (IOException e) {
+            System.out.println("Erro de escrita de arquivos!");
+        }
     }
 }
